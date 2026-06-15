@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo de Preço — Saúde PME | Hapvida NDI</title>
+<style>
+:root{
+  --bg:#f0f2f8;--bg2:#fff;--bg3:#eef1f8;--bg4:#e4e8f3;
+  --border:#d5daea;--border2:#c4ccdf;
+  --hap:#E84118;--hap-dk:#b52e0e;--hap-lt:#fff3f0;--hap-lt2:#ffe4dc;
+  --text:#1a2035;--text2:#5a6484;--text3:#9aa3bf;
+  --green:#15803d;--green-bg:#f0fdf4;--green-bd:#86efac;
+  --red:#c82020;--red-bg:#fef2f2;--red-bd:#fca5a5;--yellow:#b45309;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh}
+
+/* HEADER */
+header{background:#fff;border-bottom:3px solid var(--hap);padding:0 20px;display:flex;align-items:center;gap:14px;height:54px;box-shadow:var(--shadow)}
+.logo{width:34px;height:34px;background:var(--hap);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff;flex-shrink:0}
+header h1{font-size:15px;font-weight:700;color:var(--text)}
+.sub{font-size:11px;color:var(--text2);margin-top:1px}
+.hdr-right{margin-left:auto}
+.badge{background:var(--hap-lt);color:var(--hap);border:1px solid var(--hap-lt2);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700}
+
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);padding:0 20px}
+.tab{padding:10px 18px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.tab:hover{color:var(--text);background:var(--bg3)}
+.tab.active{color:var(--hap);border-bottom-color:var(--hap)}
+
+.panel{display:none;padding:14px 20px}.panel.active{display:block}
+
+/* FILTER BAR */
+.fbar{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;box-shadow:var(--shadow)}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px}
+select,input[type=number]{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:6px;font-size:12px;height:30px;transition:border .15s}
+select:focus,input:focus{outline:none;border-color:var(--hap);background:#fff}
+select[multiple]{height:auto;min-height:56px;padding:3px 6px}
+select[multiple] option{padding:2px 4px;border-radius:3px}
+select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
+
+/* OP MANAGEMENT */
+.op-mgmt{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.op-mgmt-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.op-slots{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.op-slot{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:5px 8px}
+.op-slot select{min-width:130px;font-size:11px;height:26px;background:#fff;border-color:var(--border)}
+.slot-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.slot-anc{padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:9px;font-weight:700;color:var(--text2)}
+.slot-anc.on{background:var(--hap);color:#fff;border-color:var(--hap)}
+.slot-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px}
+.slot-rm:hover{color:var(--red)}
+.add-op{padding:5px 10px;border-radius:7px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:11px;font-weight:600}
+.add-op:hover{border-color:var(--hap);color:var(--hap);background:var(--hap-lt)}
+
+/* OP BAR */
+.opbar{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.opbar-hdr{padding:7px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.opbar-body{display:flex;overflow-x:auto}
+.op-col{flex:1;min-width:170px;border-right:1px solid var(--border);padding:10px 10px 12px}
+.op-col:last-child{border-right:none}
+.op-col.is-anc{background:var(--hap-lt)}
+.op-col-hdr{display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.op-col-name{font-size:12px;font-weight:700}
+.anc-chip{background:var(--hap);color:#fff;font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:auto}
+.op-col-fields{display:flex;flex-direction:column;gap:5px}
+.op-col-fields .fg{width:100%}
+.op-col-fields select,.op-col-fields input{width:100%;min-width:unset;font-size:11px}
+
+/* CARDS */
+.cards{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;box-shadow:var(--shadow);border-top:3px solid transparent}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.card-val{font-size:19px;font-weight:800;line-height:1.1}
+.card-diff{font-size:11px;font-weight:700;margin-top:2px}
+.card-sub{font-size:10px;color:var(--text2);margin-top:3px}
+
+/* TABLES */
+.twrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:60vh;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:12px}
+thead{position:sticky;top:0;z-index:2}
+thead th{background:#fff;padding:8px 12px;text-align:right;font-weight:700;font-size:11px;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap}
+thead th:first-child{text-align:left}
+thead th.anc-th{background:var(--hap-lt)}
+tbody tr:hover{background:var(--bg3)}
+tbody tr:nth-child(even){background:var(--bg)}
+tbody td{padding:7px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:middle}
+tbody td:first-child{text-align:left;font-weight:600;font-size:11px}
+td.na{color:var(--text3);font-size:10px}
+tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--border)}
+
+/* DIFF BADGE */
+.diff{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:3px;vertical-align:middle}
+.d-above{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+.d-same{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* ──── MODULE 2 EQUIVALENCY TABLE ──── */
+.m2-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:var(--shadow);max-height:65vh}
+.eq-table{border-collapse:collapse;width:100%;font-size:12px}
+/* sticky double header */
+.eq-table thead{position:sticky;top:0;z-index:3}
+/* row 1: operator group headers */
+.eq-table .r1-th{background:#fff;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;border-right:1px solid var(--border)}
+.eq-table .r1-th:last-child{border-right:none}
+.eq-table .r1-th.anc-grp{background:var(--hap-lt)}
+/* row 2: sub-column headers */
+.eq-table .r2-th{background:var(--bg3);padding:4px 8px;font-size:10px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:right}
+.eq-table .r2-th.r2-plan{text-align:left;border-left:2px solid var(--border2)}
+.eq-table .r2-th.r2-anc{background:var(--hap-lt)}
+/* body rows */
+.eq-table tbody tr.eq-row:hover td{background:var(--bg3)}
+.eq-table tbody tr.eq-row:nth-child(even) td{background:var(--bg)}
+.eq-table tbody tr.eq-row.dragging td{opacity:.35}
+.eq-table tbody tr.eq-row.drag-over td.c-plan:first-of-type{border-top:3px solid var(--hap)}
+.eq-table tbody td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+/* row-number / drag col */
+.eq-table td.c-num{width:28px;min-width:28px;text-align:center;color:var(--text3);font-size:10px;border-right:2px solid var(--border2);cursor:grab;user-select:none;padding:4px 6px}
+.eq-table td.c-num:hover{color:var(--hap);background:var(--hap-lt)!important}
+/* plan selector cell */
+.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);min-width:155px;max-width:200px}
+.c-plan .ps-wrap{display:flex;gap:3px;align-items:center}
+.c-plan select.sel-plan{flex:1;font-size:10px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text);padding:0 3px;min-width:0}
+.c-plan select.sel-acom{width:44px;flex-shrink:0;font-size:9px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text2);padding:0 2px}
+.c-plan select:focus{outline:none;border-color:var(--hap);background:#fff}
+/* ticket cell */
+.eq-table td.c-tm{text-align:right;white-space:nowrap;min-width:85px;font-weight:700}
+/* diff cell */
+.eq-table td.c-diff{text-align:right;white-space:nowrap;min-width:55px}
+/* diff badges */
+.diff{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
+.d-above{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
+.d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+/* footer add-row */
+.eq-footer{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
+.eq-footer button{padding:4px 12px;border-radius:5px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:11px;font-weight:600;transition:all .15s}
+.eq-footer button:hover{border-color:var(--hap);color:var(--hap);background:var(--hap-lt)}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:rgba(240,242,248,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;gap:12px}
+.spr{width:44px;height:44px;position:relative}
+.spr-ring{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--hap);border-radius:50%;animation:spin .85s linear infinite;position:absolute}
+.spr-lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:var(--hap)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ldtxt{font-size:13px;font-weight:600;color:var(--text2)}
+.note{font-size:11px;color:var(--text2);margin-bottom:10px;padding:8px 12px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--border2)}
+</style>
+</head>
+<body>
+<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt" id="loading-text">Conectando ao repositório...</div></div>
+
+<header>
+  <div class="logo">H</div>
+  <div><h1>Comparativo de Preço — Saúde PME</h1><div class="sub">Hapvida NotreDame Intermédica · Inteligência de Mercado</div></div>
+  <div class="hdr-right"><span class="badge">📅 Maio/2026</span></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('m1')">📋 Módulo 1 — Faixa Etária</div>
+  <div class="tab" onclick="switchTab('m2')">💰 Módulo 2 — Equivalência de Planos</div>
+  <div class="tab" onclick="switchTab('m3')">📈 Módulo 3 — Evolutivo</div>
+  <div class="tab" onclick="switchTab('m4')">⚙️ Dist. Etária</div>
+</div>
+
+<!-- M1 -->
+<div id="panel-m1" class="panel active">
+  <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m1"></div></div>
+  <div class="fbar">
+    <div class="fg"><label>Município</label><select id="f1-fil" onchange="renderM1()"></select></div>
+    <div class="fg"><label>Acomodação</label>
+      <select id="f1-acom" onchange="renderM1()">
+        <option value="">Todas</option><option value="ENF">Enfermaria</option>
+        <option value="QUARTO">Quarto</option><option value="AMB">Ambulatorial</option>
+      </select>
+    </div>
+    <div class="fg"><label>Coparticipação</label>
+      <select id="f1-copart" onchange="renderM1()">
+        <option value="SIM" selected>Com Copart.</option><option value="NÃO">Sem Copart.</option><option value="">Todas</option>
+      </select>
+    </div>
+  </div>
+  <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Plano · Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m1"></div></div>
+  <div class="cards" id="cards-m1"></div>
+  <div class="twrap"><table id="tbl-m1"><thead></thead><tbody></tbody></table></div>
+</div>
+
+<!-- M2 -->
+<div id="panel-m2" class="panel">
+  <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m2"></div></div>
+  <div class="fbar">
+    <div class="fg"><label>Município</label><select id="f2-fil" onchange="renderM2()"></select></div>
+    <div class="fg"><label>Coparticipação</label>
+      <select id="f2-copart" onchange="renderM2()">
+        <option value="" selected>Todas</option><option value="SIM">Com Copart.</option><option value="NÃO">Sem Copart.</option>
+      </select>
+    </div>
+  </div>
+  <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m2"></div></div>
+  <div class="cards" id="cards-m2"></div>
+  <div class="m2-wrap" id="m2-wrap">
+    <table class="eq-table" id="tbl-m2"><thead id="m2-thead"></thead><tbody id="m2-tbody"></tbody></table>
+    <div class="add-equiv-row"><button onclick="addEquivRow()">＋ Adicionar linha de equivalência</button><span style="font-size:10px;color:var(--text2)">Arraste as linhas para reordenar</span></div>
+  </div>
+</div>
+
+<!-- M3 -->
+<div id="panel-m3" class="panel">
+  <div class="fbar">
+    <div class="fg"><label>Município</label><select id="f3-fil" onchange="renderM3()"></select></div>
+    <div class="fg"><label>Operadora</label><select id="f3-op" onchange="renderM3()"><option value="">Todas</option></select></div>
+    <div class="fg"><label>Acomodação</label>
+      <select id="f3-acom" onchange="renderM3()">
+        <option value="">Todas</option><option value="ENF">Enfermaria</option><option value="QUARTO">Quarto</option><option value="AMB">Amb.</option>
+      </select>
+    </div>
+    <div class="fg"><label>Copart.</label>
+      <select id="f3-copart" onchange="renderM3()">
+        <option value="">Todas</option><option value="SIM">Com Copart.</option><option value="NÃO">Sem Copart.</option>
+      </select>
+    </div>
+  </div>
+  <div class="note">ℹ️ O evolutivo acumula períodos a cada nova exportação. Atualmente: <strong>1 período</strong> (Mai/2026). Selecione "Todas" no filtro Operadora para exibir todas as operadoras mapeadas na base.</div>
+  <div class="twrap"><table id="tbl-m3"><thead></thead><tbody></tbody></table></div>
+</div>
+
+<!-- M4 -->
+<div id="panel-m4" class="panel">
+  <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Distribuição etária para cálculo do ticket médio ponderado.</p>
+  <div style="max-width:320px;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)">
+    <table style="width:100%;font-size:13px">
+      <thead><tr>
+        <th style="text-align:left;padding:8px 12px;background:var(--bg3);border-bottom:2px solid var(--border);font-size:11px;color:var(--text2)">Faixa</th>
+        <th style="text-align:right;padding:8px 12px;background:var(--bg3);border-bottom:2px solid var(--border);font-size:11px;color:var(--text2)">Peso %</th>
+      </tr></thead>
+      <tbody id="dist-tbody"></tbody>
+    </table>
+    <div style="padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)">
+      <button onclick="applyDist()" style="padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--hap);color:#fff;font-size:12px;font-weight:600">Recalcular</button>
+      <button onclick="resetDist()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text2);font-size:12px;font-weight:600">Restaurar</button>
+      <span id="dist-sum" style="font-size:12px;margin-left:4px"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// CONFIGURAÇÃO — altere apenas esta URL para apontar para seu repositório
+// ════════════════════════════════════════════════════════════════════
+const GITHUB_BASE = 'https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
+// Exemplo: 'https://raw.githubusercontent.com/brunohapvida/market-intel/main/dados/'
+
+// ════════════════════════════════════════════════════════════════════
+// LOADING — busca os 4 arquivos em paralelo do GitHub
+// ════════════════════════════════════════════════════════════════════
+async function loadData() {
+  const loadEl = document.getElementById('loading');
+  const loadTxt = document.getElementById('loading-text');
+
+  function setMsg(msg) { if(loadTxt) loadTxt.textContent = msg; }
+
+  try {
+    setMsg('Conectando ao repositório...');
+
+    const [metaRes, age1Res, age2Res, tmRes, equivRes] = await Promise.all([
+      fetch(GITHUB_BASE + 'data_meta.json'),
+      fetch(GITHUB_BASE + 'data_age_1.json'),
+      fetch(GITHUB_BASE + 'data_age_2.json'),
+      fetch(GITHUB_BASE + 'data_tm.json'),
+      fetch(GITHUB_BASE + 'data_equiv.json'),
+    ]);
+
+    // Check for HTTP errors
+    for(const [res, name] of [[metaRes,'meta'],[age1Res,'age_1'],[age2Res,'age_2'],[tmRes,'tm'],[equivRes,'equiv']]) {
+      if(!res.ok) throw new Error(`Erro ao carregar ${name}: ${res.status} ${res.statusText}. Verifique a URL do repositório.`);
+    }
+
+    setMsg('Carregando metadados...');
+    const meta = await metaRes.json();
+
+    setMsg('Carregando preços — parte 1/2...');
+    const age1Data = await age1Res.json();
+
+    setMsg('Carregando preços — parte 2/2...');
+    const age2Data = await age2Res.json();
+
+    setMsg('Carregando tickets médios...');
+    const tmData = await tmRes.json();
+
+    setMsg('Carregando tabela de equivalências...');
+    const equivData = await equivRes.json();
+
+    // Merge the two age parts
+    const ageData = { age: [...age1Data.age, ...age2Data.age] };
+
+    // Assemble the RAW object that the app expects
+    window.RAW = {
+      enums:       meta.enums,
+      age_cols:    meta.age_cols,
+      tm_cols:     meta.tm_cols,
+      dist_etaria: meta.dist_etaria,
+      age:         ageData.age,
+      tm:          tmData.tm,
+    };
+    window.EQUIV_ROWS_LOADED = equivData;
+
+    setMsg('Inicializando dashboard...');
+    initApp();
+
+  } catch(err) {
+    if(loadEl) {
+      loadEl.innerHTML = `
+        <div style="text-align:center;padding:40px;max-width:500px">
+          <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+          <div style="font-size:15px;font-weight:700;color:#c82020;margin-bottom:8px">Erro ao carregar dados</div>
+          <div style="font-size:12px;color:#5a6484;margin-bottom:16px">${err.message}</div>
+          <div style="font-size:11px;color:#9aa3bf;background:#eef1f8;padding:12px;border-radius:6px;text-align:left">
+            <strong>Verifique:</strong><br>
+            1. A URL em GITHUB_BASE está correta?<br>
+            2. O repositório é público?<br>
+            3. Os 4 arquivos JSON estão na pasta configurada?<br>
+            4. Os nomes dos arquivos estão corretos? (data_meta.json, data_age_1.json, data_age_2.json, data_tm.json, data_equiv.json)
+          </div>
+          <button onclick="location.reload()" style="margin-top:16px;padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">
+            Tentar novamente
+          </button>
+        </div>`;
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// APP — inicializado após carregamento dos dados
+// ════════════════════════════════════════════════════════════════════
+let RAW, EQUIV_ROWS;
+
+function initApp() {
+  RAW = window.RAW;
+  EQUIV_ROWS = window.EQUIV_ROWS_LOADED;
+
+const ENUMS=RAW.enums, AGE_C=RAW.age_cols, AGE_D=RAW.age;
+const FAIXAS=['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
+let DIST={...RAW.dist_etaria};
+const DIST0={...RAW.dist_etaria};
+const ALL_OPS=[...ENUMS['OPERADORA']]; // 11 operators
+
+const OP_COLOR={
+  HAPVIDA:'#E84118',AMIL:'#2563eb',BRADESCO:'#c82020',
+  SULAMERICA:'#b45309',PORTO:'#6d28d9',
+  'CARE PLUS':'#0891b2','OMINT':'#0d9488',
+  SELECT:'#64748b','SEG. UNIMED':'#16a34a',
+  ALICE:'#db2777','SÃO BERNARDO':'#7c3aed',
+};
+function oc(op){return OP_COLOR[op]||'#5a6484';}
+
+// Col indices — declared BEFORE OP_FV to avoid ReferenceError
+const Ai={
+  dt:AGE_C.indexOf('DT_EXPORTACAO'),fil:AGE_C.indexOf('FILIAL'),
+  op:AGE_C.indexOf('OPERADORA'),pl:AGE_C.indexOf('NM_PLANO'),
+  acom:AGE_C.indexOf('ACOMODACAO'),fv:AGE_C.indexOf('FAIXA_DE_VIDAS'),
+  cp:AGE_C.indexOf('TP_COPART'),remb:AGE_C.indexOf('REEMBOLSO'),
+  det:AGE_C.indexOf('DET_CONTRATACAO'),fe:AGE_C.indexOf('FAIXA_ETARIA'),
+  pr:AGE_C.indexOf('PRECO')
+};
+
+// Precompute available faixas de vidas per operator
+const OP_FV={};
+ALL_OPS.forEach(op=>{
+  const opI=ENUMS.OPERADORA.indexOf(op);
+  const s=new Set();
+  AGE_D.forEach(r=>{if(r[Ai.op]===opI)s.add(ENUMS.FAIXA_DE_VIDAS[r[Ai.fv]]);});
+  OP_FV[op]=[...s].sort();
+});
+
+const OP_FV_DEFAULT={
+  HAPVIDA:'2 A 29',AMIL:'5 A 29',BRADESCO:'3 A 29',SULAMERICA:'5 A 29',PORTO:'3 A 29',
+  'CARE PLUS':'2 A 29',OMINT:'4 A 29','SEG. UNIMED':'','SELECT':'',ALICE:'','SÃO BERNARDO':''
+};
+// Per-operator reembolso defaults (based on what each operator actually offers)
+const OP_REMB_DEFAULT={
+  HAPVIDA:['SEM REEMBOLSO','PARCIAL'],AMIL:['PARCIAL'],BRADESCO:['PARCIAL'],
+  SULAMERICA:['PARCIAL'],PORTO:['SEM REEMBOLSO','PARCIAL'],
+  'CARE PLUS':['COMPLETO'],OMINT:['SEM REEMBOLSO'],
+  'SEG. UNIMED':['SEM REEMBOLSO'],SELECT:['SEM REEMBOLSO'],
+  ALICE:['SEM REEMBOLSO'],'SÃO BERNARDO':['SEM REEMBOLSO'],
+};
+// Per-operator available reembolso options (only show what they have)
+const OP_REMB_AVAIL={
+  HAPVIDA:['SEM REEMBOLSO','PARCIAL','COMPLETO'],
+  AMIL:['PARCIAL','COMPLETO'],BRADESCO:['PARCIAL','COMPLETO'],
+  SULAMERICA:['PARCIAL'],PORTO:['SEM REEMBOLSO','PARCIAL'],
+  'CARE PLUS':['COMPLETO'],OMINT:['SEM REEMBOLSO','COMPLETO'],
+  'SEG. UNIMED':['SEM REEMBOLSO'],SELECT:['SEM REEMBOLSO'],
+  ALICE:['SEM REEMBOLSO'],'SÃO BERNARDO':['SEM REEMBOLSO'],
+};
+// Per-operator available acomodação
+const OP_ACOM_AVAIL={
+  HAPVIDA:['ENF','QUARTO','AMB'],AMIL:['ENF','QUARTO'],BRADESCO:['ENF','QUARTO'],
+  SULAMERICA:['ENF','QUARTO'],PORTO:['ENF','QUARTO'],
+  'CARE PLUS':['QUARTO'],OMINT:['QUARTO'],
+  'SEG. UNIMED':['ENF','QUARTO'],SELECT:['ENF','QUARTO'],
+  ALICE:['ENF','QUARTO'],'SÃO BERNARDO':['ENF','QUARTO'],
+};
+
+const state={
+  m1:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
+  m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
+};
+const cfg={};
+ALL_OPS.forEach(op=>{
+  const defRemb=(OP_REMB_DEFAULT[op]||['SEM REEMBOLSO','PARCIAL']).slice();
+  cfg[op]={
+    m1:{plan:'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
+    m2:{remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
+  };
+});
+
+// Mutable equivalency rows (deep copy so user edits don't touch original)
+let equivRows=EQUIV_ROWS.map(r=>JSON.parse(JSON.stringify(r)));
+
+function dv(col,i){return(ENUMS[col]&&i>=0)?ENUMS[col][i]:i;}
+function ei(col,v){return ENUMS[col]?ENUMS[col].indexOf(v):-1;}
+function fmt(v){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function mk(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
+function gv(id){const e=document.getElementById(id);return e?e.value:'';}
+
+// ════════════ INIT ════════════
+function init(){
+  const fils=[...ENUMS.FILIAL].sort();
+  ['f1-fil','f2-fil','f3-fil'].forEach(id=>{
+    const s=document.getElementById(id);
+    s.innerHTML='<option value="">Todos os municípios</option>';
+    fils.forEach(f=>{const o=mk('option');o.value=f;o.textContent=f;if(f==='SÃO PAULO')o.selected=true;s.appendChild(o);});
+  });
+  const f3op=document.getElementById('f3-op');
+  ALL_OPS.forEach(op=>{const o=mk('option');o.value=op;o.textContent=op;f3op.appendChild(o);});
+  buildDistTable();
+  buildModule('m1');
+  buildModule('m2');
+  renderM1();
+  document.getElementById('loading').style.display='none';
+}
+
+// ════════════ MODULE BUILDER ════════════
+function buildModule(mod){buildSlots(mod);buildOpBar(mod);}
+
+function buildSlots(mod){
+  const wrap=document.getElementById('slots-'+mod);
+  wrap.innerHTML='';
+  state[mod].ops.forEach((op,i)=>{
+    const isAnc=op===state[mod].anchor;
+    const slot=mk('div','op-slot');
+    const dot=mk('span','slot-dot');dot.style.background=oc(op);
+    const sel=mk('select');
+    sel.style.cssText='min-width:130px;font-size:11px;height:26px;background:#fff';
+    // Populate ALL_OPS — user can pick any
+    ALL_OPS.forEach(o=>{const opt=mk('option');opt.value=o;opt.textContent=o;if(o===op)opt.selected=true;sel.appendChild(opt);});
+    sel.onchange=()=>{
+      const old=state[mod].ops[i];
+      state[mod].ops[i]=sel.value;
+      if(state[mod].anchor===old)state[mod].anchor=sel.value;
+      buildModule(mod);doRender(mod);
+    };
+    const ancBtn=mk('button','slot-anc'+(isAnc?' on':''));
+    ancBtn.textContent='⚓ Âncora';ancBtn.title='Definir âncora';
+    ancBtn.onclick=()=>{state[mod].anchor=op;buildModule(mod);doRender(mod);};
+    const rmBtn=mk('button','slot-rm');rmBtn.textContent='✕';rmBtn.title='Remover';
+    rmBtn.onclick=()=>{
+      if(state[mod].ops.length<=1)return;
+      state[mod].ops.splice(i,1);
+      if(state[mod].anchor===op)state[mod].anchor=state[mod].ops[0];
+      buildModule(mod);doRender(mod);
+    };
+    slot.append(dot,sel,ancBtn,rmBtn);wrap.appendChild(slot);
+  });
+  const addBtn=mk('button','add-op');addBtn.innerHTML='＋ Adicionar';
+  addBtn.onclick=()=>{
+    // Find op not in list (allow duplicates for flexibility)
+    const next=ALL_OPS.find(o=>!state[mod].ops.includes(o))||ALL_OPS[0];
+    state[mod].ops.push(next);buildModule(mod);doRender(mod);
+  };
+  wrap.appendChild(addBtn);
+}
+
+function buildOpBar(mod){
+  const body=document.getElementById('opbar-'+mod);body.innerHTML='';
+  state[mod].ops.forEach(op=>{
+    const isAnc=op===state[mod].anchor;
+    const c=cfg[op][mod];
+    const col=mk('div','op-col'+(isAnc?' is-anc':''));
+    const hdr=mk('div','op-col-hdr');
+    // Check if op has data for current municipality
+    const _filI=ei('FILIAL',document.getElementById('f'+(mod==='m1'?'1':'2')+'-fil')?document.getElementById('f'+(mod==='m1'?'1':'2')+'-fil').value:'');
+    const _opI=ei('OPERADORA',op);
+    const _hasData=AGE_D.some(r=>r[Ai.op]===_opI&&(_filI<0||r[Ai.fil]===_filI));
+    const _warn=_hasData?'':'<span title="Sem dados para o município selecionado" style="font-size:10px;color:var(--yellow);margin-left:4px">⚠ sem dados</span>';
+    hdr.innerHTML='<span class="slot-dot" style="background:'+oc(op)+'"></span><span class="op-col-name" style="color:'+oc(op)+'">'+op+'</span>'+(isAnc?'<span class="anc-chip">⚓ Âncora</span>':'')+_warn;
+    col.appendChild(hdr);
+    const fields=mk('div','op-col-fields');
+    if(mod==='m1'){
+      const fg=mk('div','fg');const lbl=mk('label');lbl.textContent='Plano';
+      const sel=mk('select');sel.id='plan-'+op;sel.innerHTML='<option value="">Todos</option>';
+      sel.onchange=()=>{c.plan=sel.value;renderM1();};
+      fg.append(lbl,sel);fields.appendChild(fg);
+    }
+    // Reembolso multi-select — only show options this operator actually offers
+    const fgR=mk('div','fg');const lR=mk('label');lR.textContent='Reembolso';
+    const selR=mk('select');selR.multiple=true;selR.id='remb-'+mod+'-'+op;
+    const availRemb=(OP_REMB_AVAIL[op]||['SEM REEMBOLSO','PARCIAL','COMPLETO']);
+    selR.size=Math.max(1,availRemb.length);
+    availRemb.forEach(v=>{
+      const o=mk('option');o.value=v;o.textContent=v;if(c.remb.includes(v))o.selected=true;selR.appendChild(o);
+    });
+    selR.onchange=()=>{c.remb=[...selR.selectedOptions].map(o=>o.value);doRender(mod);};
+    fgR.append(lR,selR);fields.appendChild(fgR);
+    // Faixa de vidas
+    const fgFv=mk('div','fg');const lFv=mk('label');lFv.textContent='Faixa de Vidas';
+    const selFv=mk('select');selFv.id='fv-'+mod+'-'+op;
+    selFv.innerHTML='<option value="">Todas</option>';
+    (OP_FV[op]||[]).forEach(f=>{const o=mk('option');o.value=f;o.textContent=f;if(f===c.fv)o.selected=true;selFv.appendChild(o);});
+    selFv.onchange=()=>{c.fv=selFv.value;doRender(mod);};
+    fgFv.append(lFv,selFv);fields.appendChild(fgFv);
+    // Simulador %
+    const fgD=mk('div','fg');const lD=mk('label');lD.textContent='Simulador %';
+    const inpD=mk('input');inpD.type='number';inpD.step='0.1';inpD.value=c.disc;
+    inpD.onchange=()=>{c.disc=parseFloat(inpD.value)||0;doRender(mod);};
+    fgD.append(lD,inpD);fields.appendChild(fgD);
+    col.appendChild(fields);body.appendChild(col);
+  });
+}
+
+// ════════════ FILTER ROWS ════════════
+function filterRows(op,mod){
+  const c=cfg[op][mod];
+  const opI=ei('OPERADORA',op);
+  const filI=ei('FILIAL',gv('f'+(mod==='m1'?1:2)+'-fil')||'');
+  const acI=mod==='m1'?ei('ACOMODACAO',gv('f1-acom')||''):-1;
+  const cpI=ei('TP_COPART',gv('f'+(mod==='m1'?1:2)+'-copart')||'');
+  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
+  const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
+  const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
+  return AGE_D.filter(r=>
+    r[Ai.op]===opI&&(filI<0||r[Ai.fil]===filI)&&(acI<0||r[Ai.acom]===acI)&&
+    (cpI<0||r[Ai.cp]===cpI)&&(fvI<0||r[Ai.fv]===fvI)&&
+    (rIs.length===0||rIs.includes(r[Ai.remb]))&&(plI<0||r[Ai.pl]===plI)
+  );
+}
+
+function pricesByFaixa(rows){
+  const acc={};
+  rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!acc[fe])acc[fe]={s:0,n:0};acc[fe].s+=r[Ai.pr];acc[fe].n++;});
+  const out={};FAIXAS.forEach(fe=>{if(acc[fe])out[fe]=acc[fe].s/acc[fe].n;});return out;
+}
+
+function computeTM(pByF,disc=0){
+  let tm=0;FAIXAS.forEach(fe=>{if(pByF[fe])tm+=pByF[fe]*(DIST[fe]||0);});
+  return tm>0?tm*(1+disc/100):null;
+}
+
+function diffBadge(val,anc){
+  if(!anc||!val)return'';
+  const p=((val-anc)/anc*100);
+  if(Math.abs(p)<0.05)return'<span class="diff d-same">=</span>';
+  return'<span class="diff '+(p>0?'d-above':'d-below')+'">'+(p>0?'+':'')+p.toFixed(1)+'%</span>';
+}
+
+// ════════════ MODULE 1 ════════════
+function renderM1(){
+  const {ops,anchor}=state.m1;
+  const pByOp={},tmByOp={},availPlans={};
+  ops.forEach(op=>{
+    const rows=filterRows(op,'m1');
+    const rowsNP=(()=>{const c=cfg[op].m1,sv=c.plan;c.plan='';const r=filterRows(op,'m1');c.plan=sv;return r;})();
+    availPlans[op]=[...new Set(rowsNP.map(r=>dv('NM_PLANO',r[Ai.pl])))].sort();
+    const pf=pricesByFaixa(rows);const disc=cfg[op].m1.disc;
+    const adj={};FAIXAS.forEach(fe=>{if(pf[fe])adj[fe]=pf[fe]*(1+disc/100);});
+    pByOp[op]=adj;tmByOp[op]=computeTM(pf,disc);
+  });
+  ops.forEach(op=>{
+    const sel=document.getElementById('plan-'+op);if(!sel)return;
+    const prev=cfg[op].m1.plan;
+    sel.innerHTML='<option value="">Todos</option>';
+    availPlans[op].forEach(pl=>{const o=mk('option');o.value=pl;o.textContent=pl;if(pl===prev)o.selected=true;sel.appendChild(o);});
+    cfg[op].m1.plan=sel.value;
+  });
+  const ancTM=tmByOp[anchor];
+  // Cards
+  const cEl=document.getElementById('cards-m1');cEl.innerHTML='';
+  ops.forEach(op=>{
+    const tm=tmByOp[op];const isAnc=op===anchor;
+    const pct=ancTM&&tm&&!isAnc?((tm-ancTM)/ancTM*100):null;
+    const card=mk('div','card');card.style.borderTopColor=oc(op);
+    card.innerHTML='<div class="card-lbl" style="color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
+      '<div class="card-val" style="color:'+oc(op)+'">'+(tm?'R$&nbsp;'+fmt(tm):'—')+'</div>'+
+      (pct!==null?'<div class="card-diff" style="color:'+(pct>0?'var(--red)':'var(--green)')+'">'+(pct>0?'+':'')+pct.toFixed(1)+'% vs âncora</div>':'')+
+      '<div class="card-sub">Ticket Médio'+(cfg[op].m1.disc?' ('+cfg[op].m1.disc+'%)':'')+'</div>';
+    cEl.appendChild(card);
+  });
+  // Table
+  const tbl=document.getElementById('tbl-m1');
+  const thead=tbl.querySelector('thead');thead.innerHTML='';
+  const tbody=tbl.querySelector('tbody');tbody.innerHTML='';
+  const hr=mk('tr');
+  const th0=mk('th');th0.textContent='Faixa Etária';th0.style.textAlign='left';hr.appendChild(th0);
+  ops.forEach(op=>{
+    const isAnc=op===anchor;const th=mk('th');th.className=isAnc?'anc-th':'';
+    const disc=cfg[op].m1.disc;const plan=cfg[op].m1.plan;
+    th.innerHTML='<span style="color:'+oc(op)+';font-weight:700">'+op+(isAnc?' ⚓':'')+'</span>'+
+      (disc?'<br><span style="font-size:9px;color:var(--text2)">'+(disc>0?'+':'')+disc+'%</span>':'')+
+      (plan?'<br><span style="font-size:10px;font-weight:400;color:var(--text2)">'+plan+'</span>':'');
+    hr.appendChild(th);
+  });
+  thead.appendChild(hr);
+  FAIXAS.forEach(fe=>{
+    const vals=ops.map(op=>pByOp[op][fe]||null);
+    const valid=vals.filter(v=>v);const minP=valid.length?Math.min(...valid):null;
+    const ancP=pByOp[anchor]?pByOp[anchor][fe]:null;
+    const tr=mk('tr');
+    const td0=mk('td');td0.style.color='var(--text2)';td0.style.fontWeight='400';td0.textContent=fe;tr.appendChild(td0);
+    ops.forEach((op,i)=>{
+      const td=mk('td');const v=vals[i];
+      if(!v){td.className='na';td.textContent='—';}
+      else{const cheap=minP&&Math.abs(v-minP)<0.01;
+        td.innerHTML='<span style="font-weight:700;color:'+(cheap?'var(--green)':oc(op))+'">R$ '+fmt(v)+'</span>'+(op!==anchor?diffBadge(v,ancP):'');}
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  const tmr=mk('tr');tmr.className='tm-row';
+  const tmt=mk('td');tmt.textContent='Ticket Médio';tmr.appendChild(tmt);
+  ops.forEach(op=>{
+    const td=mk('td');const tm=tmByOp[op];
+    if(tm)td.innerHTML='<span style="color:'+oc(op)+'">R$ '+fmt(tm)+'</span>'+(op!==anchor?diffBadge(tm,ancTM):'');
+    else{td.className='na';td.textContent='—';}
+    tmr.appendChild(td);
+  });
+  tbody.appendChild(tmr);
+}
+
+// ════════════ MODULE 2 — EQUIVALENCY TABLE ════════════
+// Fetch TM for a specific op+plan+acom combination given current filters
+function fetchTM(op, plan, acom, mod){
+  if(!plan)return null;
+  const c=cfg[op][mod];
+  const opI=ei('OPERADORA',op);
+  const plI=ei('NM_PLANO',plan);
+  const acI=ei('ACOMODACAO',acom);
+  const filI=ei('FILIAL',gv('f2-fil')||'');
+  const cpI=ei('TP_COPART',gv('f2-copart')||'');
+  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
+  const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
+  const rows=AGE_D.filter(r=>
+    r[Ai.op]===opI&&r[Ai.pl]===plI&&r[Ai.acom]===acI&&
+    (filI<0||r[Ai.fil]===filI)&&(cpI<0||r[Ai.cp]===cpI)&&
+    (fvI<0||r[Ai.fv]===fvI)&&(rIs.length===0||rIs.includes(r[Ai.remb]))
+  );
+  if(!rows.length)return null;
+  const byFe={};
+  rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!byFe[fe])byFe[fe]={s:0,n:0};byFe[fe].s+=r[Ai.pr];byFe[fe].n++;});
+  let tm=0;FAIXAS.forEach(fe=>{if(byFe[fe])tm+=(byFe[fe].s/byFe[fe].n)*(DIST[fe]||0);});
+  return tm>0?tm*(1+cfg[op].m2.disc/100):null;
+}
+
+// Get available plans for an operator given current M2 filters (no plan filter)
+function availPlansForOp(op){
+  const c=cfg[op].m2;
+  const opI=ei('OPERADORA',op);
+  const filI=ei('FILIAL',gv('f2-fil')||'');
+  const cpI=ei('TP_COPART',gv('f2-copart')||'');
+  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
+  const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
+  const s=new Set();
+  AGE_D.forEach(r=>{
+    if(r[Ai.op]!==opI)return;
+    if(filI>=0&&r[Ai.fil]!==filI)return;
+    if(cpI>=0&&r[Ai.cp]!==cpI)return;
+    if(fvI>=0&&r[Ai.fv]!==fvI)return;
+    if(rIs.length&&!rIs.includes(r[Ai.remb]))return;
+    s.add(dv('NM_PLANO',r[Ai.pl]));
+  });
+  return [...s].sort();
+}
+
+function renderM2(){
+  const {ops,anchor}=state.m2;
+  const thead=document.getElementById('m2-thead');
+  const tbody=document.getElementById('m2-tbody');
+  thead.innerHTML=''; tbody.innerHTML='';
+
+  /* ── Header row 1: operator groups ── */
+  const hr1=mk('tr');
+  /* leading # cell spans 2 header rows */
+  const thNum=mk('th','r1-th');
+  thNum.rowSpan=2; thNum.style.cssText='width:28px;min-width:28px;border-right:2px solid var(--border2);text-align:center;font-size:10px;color:var(--text2)';
+  thNum.textContent='#'; hr1.appendChild(thNum);
+
+  ops.forEach(op=>{
+    const isAnc=op===anchor;
+    const disc=cfg[op].m2.disc;
+    /* anchor: 2 cols (plan+ticket); others: 3 cols (plan+ticket+diff) */
+    const th=mk('th','r1-th'+(isAnc?' anc-grp':''));
+    th.colSpan=isAnc?2:3;
+    th.innerHTML='<span style="color:'+oc(op)+';font-weight:800">'+op+(isAnc?' ⚓':'')+'</span>'+
+      (disc?'&thinsp;<span style="font-size:9px;font-weight:400;color:var(--text2)">'+(disc>0?'+':'')+disc+'%</span>':'');
+    hr1.appendChild(th);
+  });
+  thead.appendChild(hr1);
+
+  /* ── Header row 2: sub-columns ── */
+  const hr2=mk('tr');
+  ops.forEach(op=>{
+    const isAnc=op===anchor;
+    const s=isAnc?'r2-anc':'';
+
+    const thPl=mk('th','r2-th r2-plan '+s);
+    thPl.style.minWidth='155px';
+    thPl.textContent=op+' | Planos';
+    hr2.appendChild(thPl);
+
+    const thTm=mk('th','r2-th '+s); thTm.textContent='Ticket médio'; hr2.appendChild(thTm);
+    if(!isAnc){ const thDf=mk('th','r2-th'); thDf.textContent='%'; hr2.appendChild(thDf); }
+  });
+  thead.appendChild(hr2);
+
+  /* ── Body rows ── */
+  equivRows.forEach((row,idx)=>{
+    const tr=mk('tr','eq-row'); tr.draggable=true; tr.dataset.idx=idx;
+    setupDrag(tr,idx);
+
+    /* row number */
+    const tdN=mk('td','c-num');
+    tdN.innerHTML='<div style="font-size:13px;line-height:1">⠿</div><div>'+(idx+1)+'</div>';
+    tdN.title='Arraste para reordenar'; tr.appendChild(tdN);
+
+    /* anchor TM for diff */
+    const ancSpec=row[anchor];
+    const ancTM=ancSpec?fetchTM(anchor,ancSpec.plan,ancSpec.acom,'m2'):null;
+
+    /* collect all TMs after auto-assign (compute lazily per op) */
+    const rowTMCache={};
+    function getRowTM(op){ if(!(op in rowTMCache)){const s=equivRows[idx][op];rowTMCache[op]=s?fetchTM(op,s.plan,s.acom,'m2'):null;}return rowTMCache[op];}
+    // Pre-compute to find min (will auto-assign during ops loop, so compute after)
+    let minTM=null;
+
+    ops.forEach((op,oi)=>{
+      const isAnc=op===anchor;
+      const spec=row[op];
+      const avail=availPlansForOp(op);
+
+      /* ── Plan + Acom selector cell ── */
+      const tdPl=mk('td','c-plan');
+      const wrap=mk('div','ps-wrap');
+
+      // Auto-populate: if no spec but plans available, assign first plan
+      if(!spec&&avail.length>0){
+        const defAcom=(OP_ACOM_AVAIL[op]||['QUARTO'])[0];
+        equivRows[idx][op]={plan:avail[0],acom:defAcom};
+        // re-read spec after auto-assign
+      }
+      const spec2=equivRows[idx][op]; // use updated spec
+
+      const selPl=mk('select','sel-plan');
+      const emp=mk('option'); emp.value=''; emp.textContent='— sem equiv. —'; selPl.appendChild(emp);
+      avail.forEach(p=>{
+        const o=mk('option'); o.value=p; o.textContent=p;
+        if(spec2&&p===spec2.plan) o.selected=true;
+        selPl.appendChild(o);
+      });
+      selPl.onchange=()=>{
+        const defAcom=(OP_ACOM_AVAIL[op]||['QUARTO'])[0];
+        equivRows[idx][op]=selPl.value?{plan:selPl.value,acom:(spec2&&spec2.acom)||defAcom}:null;
+        renderM2();
+      };
+      wrap.appendChild(selPl);
+
+      if(spec2){
+        const selAc=mk('select','sel-acom');
+        [['ENF','Enf'],['QUARTO','Apto'],['AMB','Amb']].forEach(([v,t])=>{
+          const o=mk('option'); o.value=v; o.textContent=t;
+          if(v===spec2.acom) o.selected=true;
+          selAc.appendChild(o);
+        });
+        selAc.onchange=()=>{
+          if(equivRows[idx][op]) equivRows[idx][op].acom=selAc.value;
+          renderM2();
+        };
+        wrap.appendChild(selAc);
+      }
+      tdPl.appendChild(wrap); tr.appendChild(tdPl);
+
+      /* ── Ticket cell ── */
+      const tdTm=mk('td','c-tm');
+      if(spec2){
+        const tm=getRowTM(op);
+        if(tm){
+          const cheap=minTM!==null&&Math.abs(tm-minTM)<0.01;
+          tdTm.innerHTML='<span style="color:'+(cheap?'var(--green)':oc(op))+'">R$&nbsp;'+fmt(tm)+'</span>';
+        } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">sem dados</span>';
+      } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
+      tr.appendChild(tdTm);
+
+      /* ── Diff cell (non-anchor) ── */
+      if(!isAnc){
+        const tdDf=mk('td','c-diff');
+        const tm=getRowTM(op);
+        if(spec2&&ancTM&&tm){
+          const p=((tm-ancTM)/ancTM*100);
+          tdDf.innerHTML='<span class="diff '+(p>0?'d-above':'d-below')+'">'+(p>0?'+':'')+p.toFixed(1)+'%</span>';
+        } else tdDf.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
+        tr.appendChild(tdDf);
+      }
+    });
+    // Compute minTM after all auto-assigns for this row
+    const allTMs=ops.map(op=>getRowTM(op)).filter(v=>v!==null&&v>0);
+    minTM=allTMs.length?Math.min(...allTMs):null;
+    tbody.appendChild(tr);
+  });
+
+  renderM2Cards(ops,anchor);
+}
+
+function renderM2Cards(ops,anchor){
+  // Sum of all TMs per op across all equiv rows
+  const cEl=document.getElementById('cards-m2');cEl.innerHTML='';
+  ops.forEach(op=>{
+    let total=0,cnt=0;
+    equivRows.forEach(row=>{
+      const spec=row[op];
+      if(spec){const tm=fetchTM(op,spec.plan,spec.acom,'m2');if(tm){total+=tm;cnt++;}}
+    });
+    const avg=cnt?total/cnt:null;
+    const isAnc=op===anchor;
+    let ancAvg=null;
+    if(!isAnc){
+      let at=0,ac=0;
+      equivRows.forEach(row=>{const s=row[anchor];if(s){const tm=fetchTM(anchor,s.plan,s.acom,'m2');if(tm){at+=tm;ac++;}}});
+      ancAvg=ac?at/ac:null;
+    }
+    const pct=ancAvg&&avg&&!isAnc?((avg-ancAvg)/ancAvg*100):null;
+    const card=mk('div','card');card.style.borderTopColor=oc(op);
+    card.innerHTML='<div class="card-lbl" style="color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
+      '<div class="card-val" style="color:'+oc(op)+'">'+(avg?'R$&nbsp;'+fmt(avg):'—')+'</div>'+
+      (pct!==null?'<div class="card-diff" style="color:'+(pct>0?'var(--red)':'var(--green)')+'">'+(pct>0?'+':'')+pct.toFixed(1)+'% vs âncora</div>':'')+
+      '<div class="card-sub">'+(cnt)+' planos · ticket médio</div>';
+    cEl.appendChild(card);
+  });
+}
+
+// Add blank row to equivalency table
+function addEquivRow(){
+  equivRows.push({label:'Nova equivalência',tier:'Outros',HAPVIDA:null,AMIL:null,BRADESCO:null,SULAMERICA:null,PORTO:null,'CARE PLUS':null,OMINT:null,SELECT:null,'SEG. UNIMED':null,ALICE:null,'SÃO BERNARDO':null});
+  renderM2();
+}
+
+// ════════════ DRAG & DROP ════════════
+let dragSrcIdx=null;
+function setupDrag(tr,idx){
+  tr.addEventListener('dragstart',e=>{dragSrcIdx=idx;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  tr.addEventListener('dragend',()=>{tr.classList.remove('dragging');document.querySelectorAll('.eq-row').forEach(r=>r.classList.remove('drag-over'));});
+  tr.addEventListener('dragover',e=>{e.preventDefault();tr.classList.add('drag-over');});
+  tr.addEventListener('dragleave',()=>tr.classList.remove('drag-over'));
+  tr.addEventListener('drop',e=>{
+    e.preventDefault();tr.classList.remove('drag-over');
+    if(dragSrcIdx===null||dragSrcIdx===idx)return;
+    const moved=equivRows.splice(dragSrcIdx,1)[0];
+    const target=dragSrcIdx<idx?idx-1:idx;
+    equivRows.splice(target,0,moved);
+    dragSrcIdx=null;renderM2();
+  });
+}
+
+// ════════════ MODULE 3 ════════════
+function renderM3(){
+  const filI=ei('FILIAL',gv('f3-fil')||'');
+  const opI=ei('OPERADORA',gv('f3-op')||'');
+  const acI=ei('ACOMODACAO',gv('f3-acom')||'');
+  const cpI=ei('TP_COPART',gv('f3-copart')||'');
+  const grouped={};
+  AGE_D.forEach(r=>{
+    if(filI>=0&&r[Ai.fil]!==filI)return;if(opI>=0&&r[Ai.op]!==opI)return;
+    if(acI>=0&&r[Ai.acom]!==acI)return;if(cpI>=0&&r[Ai.cp]!==cpI)return;
+    const dt=dv('DT_EXPORTACAO',r[Ai.dt]),op=dv('OPERADORA',r[Ai.op]),pl=dv('NM_PLANO',r[Ai.pl]),fe=dv('FAIXA_ETARIA',r[Ai.fe]);
+    const k=dt+'|'+op+'|'+pl;
+    if(!grouped[k])grouped[k]={dt,op,pl,f:{}};
+    if(!grouped[k].f[fe])grouped[k].f[fe]={s:0,n:0};
+    grouped[k].f[fe].s+=r[Ai.pr];grouped[k].f[fe].n++;
+  });
+  const rows=[];
+  Object.values(grouped).forEach(({dt,op,pl,f})=>{
+    let tm=0;FAIXAS.forEach(fe=>{if(f[fe])tm+=(f[fe].s/f[fe].n)*(DIST[fe]||0);});
+    if(tm>0)rows.push({dt,op,pl,tm});
+  });
+  rows.sort((a,b)=>a.op.localeCompare(b.op)||a.pl.localeCompare(b.pl));
+  const dates=[...new Set(rows.map(r=>r.dt))].sort();
+  const tbl=document.getElementById('tbl-m3');
+  const thead=tbl.querySelector('thead');thead.innerHTML='';
+  const tbody=tbl.querySelector('tbody');tbody.innerHTML='';
+  const hr=mk('tr');
+  ['Operadora','Plano',...dates].forEach((t,i)=>{const th=mk('th');th.textContent=t;if(i<2)th.style.textAlign='left';hr.appendChild(th);});
+  thead.appendChild(hr);
+  const byOpPl={};
+  rows.forEach(r=>{const k=r.op+'|'+r.pl;if(!byOpPl[k])byOpPl[k]={op:r.op,pl:r.pl,d:{}};byOpPl[k].d[r.dt]=r.tm;});
+  Object.values(byOpPl).forEach(({op,pl,d})=>{
+    const tr=mk('tr');
+    const t1=mk('td');t1.innerHTML='<span style="color:'+oc(op)+';font-weight:700">'+op+'</span>';tr.appendChild(t1);
+    const t2=mk('td');t2.textContent=pl;tr.appendChild(t2);
+    dates.forEach((dt,di)=>{
+      const td=mk('td');const v=d[dt];
+      if(!v){td.className='na';td.textContent='—';}
+      else{const prev=di>0?d[dates[di-1]]:null;const diff=prev?((v-prev)/prev*100):null;
+        td.innerHTML='R$ '+fmt(v)+(diff!==null?'<br><span style="font-size:9px;color:'+(diff<0?'var(--green)':'var(--red)')+'">'+( diff>0?'+':'')+diff.toFixed(1)+'%</span>':'');}
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  if(!Object.keys(byOpPl).length)tbody.innerHTML='<tr><td colspan="'+(2+dates.length)+'" style="text-align:center;padding:24px;color:var(--text2);font-style:italic">Sem dados.</td></tr>';
+}
+
+// ════════════ DIST ETÁRIA ════════════
+function buildDistTable(){
+  const tbody=document.getElementById('dist-tbody');tbody.innerHTML='';
+  FAIXAS.forEach(fe=>{
+    const id='d_'+fe.replace(/ /g,'_').replace(/\+/g,'P');
+    const tr=mk('tr');
+    tr.innerHTML='<td style="padding:6px 12px;border-bottom:1px solid var(--border)">'+fe+'</td>'+
+      '<td style="padding:6px 12px;border-bottom:1px solid var(--border);text-align:right"><input type="number" id="'+id+'" step="1" min="0" max="100" value="'+Math.round((DIST[fe]||0)*100)+'" style="width:60px;text-align:right" oninput="updateDistSum()"></td>';
+    tbody.appendChild(tr);
+  });
+  updateDistSum();
+}
+function updateDistSum(){
+  let s=0;
+  FAIXAS.forEach(fe=>{const el=document.getElementById('d_'+fe.replace(/ /g,'_').replace(/\+/g,'P'));if(el)s+=parseFloat(el.value)||0;});
+  const el=document.getElementById('dist-sum');
+  el.textContent='Soma: '+s.toFixed(0)+'%';el.style.color=Math.abs(s-100)<1?'var(--green)':'var(--red)';
+}
+function applyDist(){
+  FAIXAS.forEach(fe=>{const el=document.getElementById('d_'+fe.replace(/ /g,'_').replace(/\+/g,'P'));if(el)DIST[fe]=(parseFloat(el.value)||0)/100;});
+  updateDistSum();renderM1();renderM2();renderM3();
+}
+function resetDist(){DIST={...DIST0};buildDistTable();renderM1();renderM2();renderM3();}
+
+// ════════════ NAV ════════════
+function doRender(mod){if(mod==='m1')renderM1();else renderM2();}
+function switchTab(mod){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['m1','m2','m3','m4'][i]===mod));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+mod));
+  if(mod==='m1')renderM1();else if(mod==='m2')renderM2();else if(mod==='m3')renderM3();
+}
+
+window.addEventListener('DOMContentLoaded',init);
+
+}
+
+// Start loading when DOM is ready
+window.addEventListener('DOMContentLoaded', loadData);
+</script>
