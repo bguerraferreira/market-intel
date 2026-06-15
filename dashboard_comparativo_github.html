@@ -31,7 +31,7 @@ header h1{font-size:15px;font-weight:700;color:var(--text)}
 .tab:hover{color:var(--text);background:var(--bg3)}
 .tab.active{color:var(--hap);border-bottom-color:var(--hap)}
 
-.panel{display:none;padding:14px 20px}.panel.active{display:block}
+.panel{display:none;padding:10px 16px}.panel.active{display:block}
 
 /* FILTER BAR */
 .fbar{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;box-shadow:var(--shadow)}
@@ -61,7 +61,7 @@ select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
 .opbar{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
 .opbar-hdr{padding:7px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
 .opbar-body{display:flex;overflow-x:auto}
-.op-col{flex:1;min-width:170px;border-right:1px solid var(--border);padding:10px 10px 12px}
+.op-col{flex:1;min-width:145px;border-right:1px solid var(--border);padding:7px 8px 10px}
 .op-col:last-child{border-right:none}
 .op-col.is-anc{background:var(--hap-lt)}
 .op-col-hdr{display:flex;align-items:center;gap:5px;margin-bottom:8px}
@@ -73,7 +73,7 @@ select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
 
 /* CARDS */
 .cards{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;box-shadow:var(--shadow);border-top:3px solid transparent}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 12px;flex:1;min-width:110px;box-shadow:var(--shadow);border-top:3px solid transparent}
 .card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
 .card-val{font-size:19px;font-weight:800;line-height:1.1}
 .card-diff{font-size:11px;font-weight:700;margin-top:2px}
@@ -99,45 +99,44 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 .d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
 .d-same{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 
-/* ──── MODULE 2 EQUIVALENCY TABLE ──── */
-.m2-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:var(--shadow);max-height:65vh}
-.eq-table{border-collapse:collapse;width:100%;font-size:12px}
-/* sticky double header */
+/* ──── MODULE 2 EQUIVALENCY TABLE — compact ──── */
+.m2-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:var(--shadow);max-height:70vh}
+.eq-table{border-collapse:collapse;width:100%;font-size:11px;table-layout:fixed}
 .eq-table thead{position:sticky;top:0;z-index:3}
 /* row 1: operator group headers */
-.eq-table .r1-th{background:#fff;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;border-right:1px solid var(--border)}
+.eq-table .r1-th{background:#fff;padding:4px 6px;font-size:10px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;border-right:1px solid var(--border)}
 .eq-table .r1-th:last-child{border-right:none}
 .eq-table .r1-th.anc-grp{background:var(--hap-lt)}
 /* row 2: sub-column headers */
-.eq-table .r2-th{background:var(--bg3);padding:4px 8px;font-size:10px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:right}
+.eq-table .r2-th{background:var(--bg3);padding:3px 5px;font-size:9px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:right}
 .eq-table .r2-th.r2-plan{text-align:left;border-left:2px solid var(--border2)}
 .eq-table .r2-th.r2-anc{background:var(--hap-lt)}
 /* body rows */
 .eq-table tbody tr.eq-row:hover td{background:var(--bg3)}
 .eq-table tbody tr.eq-row:nth-child(even) td{background:var(--bg)}
 .eq-table tbody tr.eq-row.dragging td{opacity:.35}
-.eq-table tbody tr.eq-row.drag-over td.c-plan:first-of-type{border-top:3px solid var(--hap)}
-.eq-table tbody td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.eq-table tbody tr.eq-row.drag-over td.c-plan:first-of-type{border-top:2px solid var(--hap)}
+.eq-table tbody td{padding:3px 5px;border-bottom:1px solid var(--border);vertical-align:middle}
 /* row-number / drag col */
-.eq-table td.c-num{width:28px;min-width:28px;text-align:center;color:var(--text3);font-size:10px;border-right:2px solid var(--border2);cursor:grab;user-select:none;padding:4px 6px}
+.eq-table td.c-num{width:22px;min-width:22px;max-width:22px;text-align:center;color:var(--text3);font-size:9px;border-right:2px solid var(--border2);cursor:grab;user-select:none;padding:3px 4px}
 .eq-table td.c-num:hover{color:var(--hap);background:var(--hap-lt)!important}
-/* plan selector cell */
-.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);min-width:155px;max-width:200px}
-.c-plan .ps-wrap{display:flex;gap:3px;align-items:center}
-.c-plan select.sel-plan{flex:1;font-size:10px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text);padding:0 3px;min-width:0}
-.c-plan select.sel-acom{width:44px;flex-shrink:0;font-size:9px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text2);padding:0 2px}
+/* plan selector cell — compact width */
+.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);width:170px;min-width:140px;max-width:175px}
+.c-plan .ps-wrap{display:flex;gap:2px;align-items:center}
+.c-plan select.sel-plan{flex:1;font-size:9px;height:20px;border:1px solid var(--border);border-radius:3px;background:var(--bg3);color:var(--text);padding:0 2px;min-width:0}
+.c-plan select.sel-acom{width:38px;flex-shrink:0;font-size:8px;height:20px;border:1px solid var(--border);border-radius:3px;background:var(--bg3);color:var(--text2);padding:0 1px}
 .c-plan select:focus{outline:none;border-color:var(--hap);background:#fff}
-/* ticket cell */
-.eq-table td.c-tm{text-align:right;white-space:nowrap;min-width:85px;font-weight:700}
-/* diff cell */
-.eq-table td.c-diff{text-align:right;white-space:nowrap;min-width:55px}
+/* ticket cell — compact */
+.eq-table td.c-tm{text-align:right;white-space:nowrap;width:78px;min-width:70px;font-weight:700;font-size:11px}
+/* diff cell — compact */
+.eq-table td.c-diff{text-align:right;white-space:nowrap;width:46px;min-width:42px}
 /* diff badges */
-.diff{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
+.diff{display:inline-block;font-size:8px;font-weight:700;padding:1px 3px;border-radius:3px}
 .d-above{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
 .d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
 /* footer add-row */
-.eq-footer{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
-.eq-footer button{padding:4px 12px;border-radius:5px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:11px;font-weight:600;transition:all .15s}
+.eq-footer{display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
+.eq-footer button{padding:3px 10px;border-radius:5px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:10px;font-weight:600;transition:all .15s}
 .eq-footer button:hover{border-color:var(--hap);color:var(--hap);background:var(--hap-lt)}
 
 /* LOADING */
