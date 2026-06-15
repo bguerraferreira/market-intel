@@ -173,8 +173,9 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     <div class="fg"><label>Município</label><select id="f1-fil" onchange="renderM1()"></select></div>
     <div class="fg"><label>Acomodação</label>
       <select id="f1-acom" onchange="renderM1()">
-        <option value="">Todas</option><option value="ENF">Enfermaria</option>
+        <option value="ENF" selected>Enfermaria</option>
         <option value="QUARTO">Quarto</option><option value="AMB">Ambulatorial</option>
+        <option value="">Todas</option>
       </select>
     </div>
     <div class="fg"><label>Coparticipação</label>
@@ -260,7 +261,22 @@ async function loadData() {
   const loadEl = document.getElementById('loading');
   const loadTxt = document.getElementById('loading-text');
 
-  function setMsg(msg) { if(loadTxt) loadTxt.textContent = msg; }
+  function setMsg(msg) { 
+    if(loadTxt) loadTxt.textContent = msg;
+    console.log('[Dashboard]', msg);
+  }
+  
+  // Timeout after 90s
+  const timeout = setTimeout(()=>{
+    if(loadEl && loadEl.style.display !== 'none'){
+      loadEl.innerHTML = `<div style="text-align:center;padding:40px;max-width:500px">
+        <div style="font-size:28px;margin-bottom:12px">⏱️</div>
+        <div style="font-size:14px;font-weight:700;color:#c82020;margin-bottom:8px">Tempo esgotado</div>
+        <div style="font-size:11px;color:#5a6484;margin-bottom:12px">Os arquivos JSON estão demorando muito para carregar do GitHub. Verifique sua conexão ou tente novamente.</div>
+        <button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">Tentar novamente</button>
+      </div>`;
+    }
+  }, 90000);
 
   try {
     setMsg('Conectando ao repositório...');
@@ -281,10 +297,10 @@ async function loadData() {
     setMsg('Carregando metadados...');
     const meta = await metaRes.json();
 
-    setMsg('Carregando preços — parte 1/2...');
+    setMsg('Carregando preços — parte 1/2 (pode levar 10-20s)...');
     const age1Data = await age1Res.json();
 
-    setMsg('Carregando preços — parte 2/2...');
+    setMsg('Carregando preços — parte 2/2 (quase lá)...');
     const age2Data = await age2Res.json();
 
     setMsg('Carregando tickets médios...');
@@ -307,8 +323,14 @@ async function loadData() {
     };
     window.EQUIV_ROWS_LOADED = equivData;
 
+    clearTimeout(timeout);
     setMsg('Inicializando dashboard...');
-    initApp();
+    try {
+      initApp();
+    } catch(initErr) {
+      console.error('[Dashboard] initApp error:', initErr);
+      throw new Error('Erro ao inicializar: ' + initErr.message);
+    }
 
   } catch(err) {
     if(loadEl) {
@@ -410,10 +432,15 @@ const state={
   m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
 };
 const cfg={};
+// Default plans for Module 1
+const OP_PLAN_DEFAULT_M1={
+  HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',
+  SULAMERICA:'DIRETO NACIONAL',PORTO:'P220',
+};
 ALL_OPS.forEach(op=>{
   const defRemb=(OP_REMB_DEFAULT[op]||['SEM REEMBOLSO','PARCIAL']).slice();
   cfg[op]={
-    m1:{plan:'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
+    m1:{plan:OP_PLAN_DEFAULT_M1[op]||'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
     m2:{remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
   };
 });
