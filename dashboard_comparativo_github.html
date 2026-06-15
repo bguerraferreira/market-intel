@@ -781,13 +781,8 @@ function renderM2(){
       const tdPl=mk('td','c-plan');
       const wrap=mk('div','ps-wrap');
 
-      // Auto-populate: if no spec but plans available, assign first plan
-      if(!spec&&avail.length>0){
-        const defAcom=(OP_ACOM_AVAIL[op]||['QUARTO'])[0];
-        equivRows[idx][op]={plan:avail[0],acom:defAcom};
-        // re-read spec after auto-assign
-      }
-      const spec2=equivRows[idx][op]; // use updated spec
+      // Respect null exactly — null means "sem equivalente", never auto-assign
+      const spec2=equivRows[idx][op];
 
       const selPl=mk('select','sel-plan');
       const emp=mk('option'); emp.value=''; emp.textContent='— sem equiv. —'; selPl.appendChild(emp);
