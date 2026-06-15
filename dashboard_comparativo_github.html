@@ -951,7 +951,14 @@ function switchTab(mod){
   if(mod==='m1')renderM1();else if(mod==='m2')renderM2();else if(mod==='m3')renderM3();
 }
 
-window.addEventListener('DOMContentLoaded',init);
+// Expose functions needed by HTML onclick handlers to global scope
+  window.switchTab    = switchTab;
+  window.addEquivRow  = addEquivRow;
+  window.applyDist    = applyDist;
+  window.resetDist    = resetDist;
+  window.updateDistSum= updateDistSum;
+
+  init(); // call directly — DOMContentLoaded already fired
 
 }
 
