@@ -215,6 +215,16 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
         <option value="SIM" selected>Com Copart.</option><option value="NÃO">Sem Copart.</option><option value="">Todas</option>
       </select>
     </div>
+    <div class="fg"><label>MEI</label>
+      <select id="f-mei" onchange="renderM1();renderM2()">
+        <option value="">Todos</option><option value="Não MEI">Não MEI</option><option value="MEI">MEI</option>
+      </select>
+    </div>
+    <div class="fg"><label>Tipo de Adesão</label>
+      <select id="f-adesao" onchange="renderM1();renderM2()">
+        <option value="">Todos</option><option value="OPCIONAL">Opcional</option><option value="Compulsória">Compulsória</option>
+      </select>
+    </div>
   </div>
   <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Plano · Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m1"></div></div>
   <div class="cards" id="cards-m1"></div>
@@ -315,16 +325,15 @@ async function loadData() {
   try {
     setMsg('Conectando ao repositório...');
 
-    const [metaRes, age1Res, age2Res, tmRes, equivRes] = await Promise.all([
+    const [metaRes, age1Res, age2Res, equivRes] = await Promise.all([
       fetch(GITHUB_BASE + 'data_meta.json'),
       fetch(GITHUB_BASE + 'data_age_1.json'),
       fetch(GITHUB_BASE + 'data_age_2.json'),
-      fetch(GITHUB_BASE + 'data_tm.json'),
       fetch(GITHUB_BASE + 'data_equiv.json'),
     ]);
 
     // Check for HTTP errors
-    for(const [res, name] of [[metaRes,'meta'],[age1Res,'age_1'],[age2Res,'age_2'],[tmRes,'tm'],[equivRes,'equiv']]) {
+    for(const [res, name] of [[metaRes,'meta'],[age1Res,'age_1'],[age2Res,'age_2'],[equivRes,'equiv']]) {
       if(!res.ok) throw new Error(`Erro ao carregar ${name}: ${res.status} ${res.statusText}. Verifique a URL do repositório.`);
     }
 
@@ -378,7 +387,7 @@ async function loadData() {
             1. A URL em GITHUB_BASE está correta?<br>
             2. O repositório é público?<br>
             3. Os 4 arquivos JSON estão na pasta configurada?<br>
-            4. Os nomes dos arquivos estão corretos? (data_meta.json, data_age_1.json, data_age_2.json, data_tm.json, data_equiv.json)
+            4. Os nomes dos arquivos estão corretos? (data_meta.json, data_age_1.json, data_age_2.json, data_equiv.json)
           </div>
           <button onclick="location.reload()" style="margin-top:16px;padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">
             Tentar novamente
@@ -416,10 +425,13 @@ function oc(op){return OP_COLOR[op]||'#5a6484';}
 const Ai={
   dt:AGE_C.indexOf('DT_EXPORTACAO'),fil:AGE_C.indexOf('FILIAL'),
   op:AGE_C.indexOf('OPERADORA'),pl:AGE_C.indexOf('NM_PLANO'),
-  acom:AGE_C.indexOf('ACOMODACAO'),fv:AGE_C.indexOf('FAIXA_DE_VIDAS'),
-  cp:AGE_C.indexOf('TP_COPART'),remb:AGE_C.indexOf('REEMBOLSO'),
-  det:AGE_C.indexOf('DET_CONTRATACAO'),fe:AGE_C.indexOf('FAIXA_ETARIA'),
-  pr:AGE_C.indexOf('PRECO')
+  abr:AGE_C.indexOf('ABRANGENCIA'),acom:AGE_C.indexOf('ACOMODACAO'),
+  fv:AGE_C.indexOf('FAIXA_DE_VIDAS'),adesao:AGE_C.indexOf('TP_ADESAO'),
+  mei:AGE_C.indexOf('MEI'),linha:AGE_C.indexOf('LINHA'),
+  remb:AGE_C.indexOf('REEMBOLSO'),titular:AGE_C.indexOf('TITULAR'),
+  vig:AGE_C.indexOf('VIGÊNCIA'),fe:AGE_C.indexOf('FAIXA_ETARIA'),
+  pr:AGE_C.indexOf('PRECO'),
+  cp:-1 // TP_COPART removed (replaced by ABRANGENCIA)
 };
 
 // Precompute available faixas de vidas per operator
@@ -474,8 +486,9 @@ const OP_PLAN_DEFAULT_M1={
 ALL_OPS.forEach(op=>{
   const defRemb=(OP_REMB_DEFAULT[op]||['SEM REEMBOLSO','PARCIAL']).slice();
   cfg[op]={
-    m1:{plan:OP_PLAN_DEFAULT_M1[op]||'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
-    m2:{remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0},
+    m1:{plan:OP_PLAN_DEFAULT_M1[op]||'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',
+        disc:0,titular:'',vig:'',linha:''},
+    m2:{remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0,titular:'',vig:'',linha:''},
   };
 });
 
@@ -589,6 +602,42 @@ function buildOpBar(mod){
     const inpD=mk('input');inpD.type='number';inpD.step='0.1';inpD.value=c.disc;
     inpD.onchange=()=>{c.disc=parseFloat(inpD.value)||0;doRender(mod);};
     fgD.append(lD,inpD);fields.appendChild(fgD);
+    // Titular
+    const fgTit=mk('div','fg');const lTit=mk('label');lTit.textContent='Titular';
+    const selTit=mk('select');selTit.id='titular-'+mod+'-'+op;
+    selTit.innerHTML='<option value="">Todos</option>';
+    (ENUMS.TITULAR||['1','2']).forEach(v=>{
+      const o=mk('option');o.value=v;o.textContent=v+' titular'+(v==='1'?'':'es');
+      if(v===c.titular)o.selected=true;selTit.appendChild(o);
+    });
+    selTit.onchange=()=>{c.titular=selTit.value;doRender(mod);};
+    fgTit.append(lTit,selTit);fields.appendChild(fgTit);
+    // Vigência
+    const fgVig=mk('div','fg');const lVig=mk('label');lVig.textContent='Vigência';
+    const selVig=mk('select');selVig.id='vig-'+mod+'-'+op;
+    selVig.innerHTML='<option value="">Todas</option>';
+    (ENUMS.VIGÊNCIA||['12','24']).forEach(v=>{
+      const o=mk('option');o.value=v;o.textContent=v+' meses';
+      if(v===c.vig)o.selected=true;selVig.appendChild(o);
+    });
+    selVig.onchange=()=>{c.vig=selVig.value;doRender(mod);};
+    fgVig.append(lVig,selVig);fields.appendChild(fgVig);
+    // Linha (só exibe se op tiver linhas)
+    const opLinhas=(ENUMS.LINHA||[]).filter(l=>{
+      const opI=ei('OPERADORA',op);
+      return AGE_D.some(r=>r[Ai.op]===opI&&r[Ai.linha]===ei('LINHA',l));
+    });
+    if(opLinhas.length>0){
+      const fgLinha=mk('div','fg');const lLinha=mk('label');lLinha.textContent='Linha';
+      const selLinha=mk('select');selLinha.id='linha-'+mod+'-'+op;
+      selLinha.innerHTML='<option value="">Todas</option>';
+      opLinhas.forEach(v=>{
+        const o=mk('option');o.value=v;o.textContent=v;
+        if(v===c.linha)o.selected=true;selLinha.appendChild(o);
+      });
+      selLinha.onchange=()=>{c.linha=selLinha.value;doRender(mod);};
+      fgLinha.append(lLinha,selLinha);fields.appendChild(fgLinha);
+    }
     col.appendChild(fields);body.appendChild(col);
   });
 }
@@ -599,15 +648,37 @@ function filterRows(op,mod){
   const opI=ei('OPERADORA',op);
   const filI=ei('FILIAL',gv('f'+(mod==='m1'?1:2)+'-fil')||'');
   const acI=mod==='m1'?ei('ACOMODACAO',gv('f1-acom')||''):-1;
-  const cpI=ei('TP_COPART',gv('f'+(mod==='m1'?1:2)+'-copart')||'');
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
-  return AGE_D.filter(r=>
-    r[Ai.op]===opI&&(filI<0||r[Ai.fil]===filI)&&(acI<0||r[Ai.acom]===acI)&&
-    (cpI<0||r[Ai.cp]===cpI)&&(fvI<0||r[Ai.fv]===fvI)&&
-    (rIs.length===0||rIs.includes(r[Ai.remb]))&&(plI<0||r[Ai.pl]===plI)
-  );
+  // Global filters
+  const meiVal=gv('f-mei')||'';
+  const adesaoVal=gv('f-adesao')||'';
+  const meiI=meiVal?ei('MEI',meiVal):-1;
+  const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
+  // Coparticipação: SIM=PARCIAL, NÃO=qualquer COMPLETA*
+  const cpVal=gv('f'+(mod==='m1'?1:2)+'-copart')||'';
+  // Per-op filters (titular, vigência, linha)
+  const titI=c.titular?ei('TITULAR',c.titular):-1;
+  const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
+  const linhaI=c.linha?ei('LINHA',c.linha):-1;
+  return AGE_D.filter(r=>{
+    if(r[Ai.op]!==opI) return false;
+    if(filI>=0&&r[Ai.fil]!==filI) return false;
+    if(acI>=0&&r[Ai.acom]!==acI) return false;
+    if(fvI>=0&&r[Ai.fv]!==fvI) return false;
+    if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
+    if(plI>=0&&r[Ai.pl]!==plI) return false;
+    // Copart via ABRANGENCIA: PARCIAL=com copart, COMPLETA*=sem
+    if(cpVal==='SIM'&&r[Ai.abr]!==ei('ABRANGENCIA','PARCIAL')) return false;
+    if(cpVal==='NÃO'&&r[Ai.abr]===ei('ABRANGENCIA','PARCIAL')) return false;
+    if(meiI>=0&&r[Ai.mei]!==meiI) return false;
+    if(adesaoI>=0&&r[Ai.adesao]!==adesaoI) return false;
+    if(titI>=0&&r[Ai.titular]!==titI) return false;
+    if(vigI>=0&&r[Ai.vig]!==vigI) return false;
+    if(linhaI>=0&&r[Ai.linha]!==linhaI) return false;
+    return true;
+  });
 }
 
 function pricesByFaixa(rows){
@@ -709,15 +780,32 @@ function fetchTM(op, plan, acom, mod){
   const opI=ei('OPERADORA',op);
   const plI=ei('NM_PLANO',plan);
   const acI=ei('ACOMODACAO',acom);
-  const filI=ei('FILIAL',gv('f2-fil')||'');
-  const cpI=ei('TP_COPART',gv('f2-copart')||'');
+  const filNum=mod==='m1'?1:2;
+  const filI=ei('FILIAL',gv('f'+filNum+'-fil')||'');
+  const cpVal=gv('f'+filNum+'-copart')||'';
+  const meiVal=gv('f-mei')||'';
+  const adesaoVal=gv('f-adesao')||'';
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
-  const rows=AGE_D.filter(r=>
-    r[Ai.op]===opI&&r[Ai.pl]===plI&&r[Ai.acom]===acI&&
-    (filI<0||r[Ai.fil]===filI)&&(cpI<0||r[Ai.cp]===cpI)&&
-    (fvI<0||r[Ai.fv]===fvI)&&(rIs.length===0||rIs.includes(r[Ai.remb]))
-  );
+  const titI=c.titular?ei('TITULAR',c.titular):-1;
+  const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
+  const linhaI=c.linha?ei('LINHA',c.linha):-1;
+  const meiI=meiVal?ei('MEI',meiVal):-1;
+  const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
+  const rows=AGE_D.filter(r=>{
+    if(r[Ai.op]!==opI||r[Ai.pl]!==plI||r[Ai.acom]!==acI) return false;
+    if(filI>=0&&r[Ai.fil]!==filI) return false;
+    if(cpVal==='SIM'&&r[Ai.abr]!==ei('ABRANGENCIA','PARCIAL')) return false;
+    if(cpVal==='NÃO'&&r[Ai.abr]===ei('ABRANGENCIA','PARCIAL')) return false;
+    if(fvI>=0&&r[Ai.fv]!==fvI) return false;
+    if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
+    if(meiI>=0&&r[Ai.mei]!==meiI) return false;
+    if(adesaoI>=0&&r[Ai.adesao]!==adesaoI) return false;
+    if(titI>=0&&r[Ai.titular]!==titI) return false;
+    if(vigI>=0&&r[Ai.vig]!==vigI) return false;
+    if(linhaI>=0&&r[Ai.linha]!==linhaI) return false;
+    return true;
+  });
   if(!rows.length)return null;
   const byFe={};
   rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!byFe[fe])byFe[fe]={s:0,n:0};byFe[fe].s+=r[Ai.pr];byFe[fe].n++;});
