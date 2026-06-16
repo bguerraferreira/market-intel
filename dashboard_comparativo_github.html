@@ -204,6 +204,9 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
   <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m2"></div></div>
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f2-fil" onchange="renderM2()"></select></div>
+    <div class="fg"><label>UF</label><select id="f-uf-m2" onchange="renderM1();renderM2()"><option value="">Todas</option></select></div>
+    <div class="fg"><label>MEI</label><select id="f-mei-m2" onchange="renderM1();renderM2()"><option value="">Todos</option><option value="NÃO MEI">Não MEI</option><option value="MEI">MEI</option></select></div>
+    <div class="fg"><label>Tipo de Adesão</label><select id="f-adesao-m2" onchange="renderM1();renderM2()"><option value="">Todos</option><option value="OPCIONAL">Opcional</option><option value="COMPULSÓRIA">Compulsória</option></select></div>
     <div class="fg"><label>Coparticipação</label>
       <select id="f2-copart" multiple size="5" onchange="renderM2()" style="font-size:10px;min-height:82px">
         <option value="COMPLETA" selected>Completa</option>
@@ -254,15 +257,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
       </tr></thead>
       <tbody id="dist-tbody"></tbody>
     </table>
-    <div style="padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)">
-      <button onclick="applyDist()" style="padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--hap);color:#fff;font-size:12px;font-weight:600">Recalcular</button>
-      <button onclick="resetDist()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text2);font-size:12px;font-weight:600">Restaurar</button>
-      <span id="dist-sum" style="font-size:12px;margin-left:4px"></span>
-    </div>
-  </div>
-</div>
-
-<script>
+    <div style="padding:10px 12px
 const GITHUB_BASE='https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
 let RAW,EQUIV_ROWS;
 async function loadData(){
@@ -389,8 +384,7 @@ function gv(id){const e=document.getElementById(id);return e?e.value:'';}
 
 // ════════════ INIT ════════════
 function init(){
-  const ufSel=document.getElementById('f-uf');
-  if(ufSel&&ENUMS.UF){[...ENUMS.UF].sort().forEach(u=>{const o=mk('option');o.value=u;o.textContent=u;ufSel.appendChild(o);});}
+  ['f-uf','f-uf-m2'].forEach(id=>{const ufSel=document.getElementById(id);if(ufSel&&ENUMS.UF){[...ENUMS.UF].sort().forEach(u=>{const o=mk('option');o.value=u;o.textContent=u;ufSel.appendChild(o);});}});
   const fils=[...ENUMS.FILIAL].sort();
   ['f1-fil','f2-fil','f3-fil'].forEach(id=>{
     const s=document.getElementById(id);
@@ -520,7 +514,8 @@ function filterRows(op,mod){
   const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
   const sel=document.getElementById('f'+n+'-copart');
   const abrIs=sel?[...sel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1):[];
-  const ufI=ei('UF',gv('f-uf')||''),meiI=ei('MEI',gv('f-mei')||''),adsI=ei('TP_ADESAO',gv('f-adesao')||'');
+  const _ufv=gv('f-uf')||gv('f-uf-m2')||'',_meiv=gv('f-mei')||gv('f-mei-m2')||'',_adsv=gv('f-adesao')||gv('f-adesao-m2')||'';
+  const ufI=ei('UF',_ufv),meiI=ei('MEI',_meiv),adsI=ei('TP_ADESAO',_adsv);
   const titI=c.titular?ei('TITULAR',c.titular):-1,vigI=c.vig?ei('VIGÊNCIA',c.vig):-1,lnhI=c.linha?ei('LINHA',c.linha):-1;
   return AGE_D.filter(r=>{
     if(r[Ai.op]!==opI)return false;
@@ -641,7 +636,7 @@ function fetchTM(op,plan,acom,mod){
   const opI=ei('OPERADORA',op),plI=ei('NM_PLANO',plan),acI=ei('ACOMODACAO',acom),filI=ei('FILIAL',gv('f'+n+'-fil')||'');
   const sel=document.getElementById('f'+n+'-copart');
   const abrIs=sel?[...sel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1):[];
-  const meiI=ei('MEI',gv('f-mei')||''),adsI=ei('TP_ADESAO',gv('f-adesao')||'');
+  const meiI=ei('MEI',gv('f-mei')||gv('f-mei-m2')||''),adsI=ei('TP_ADESAO',gv('f-adesao')||gv('f-adesao-m2')||'');
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=(c.remb&&c.remb.length)?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const titI=c.titular?ei('TITULAR',c.titular):-1,vigI=c.vig?ei('VIGÊNCIA',c.vig):-1,lnhI=c.linha?ei('LINHA',c.linha):-1;
@@ -753,12 +748,7 @@ function renderM2(){
       const tdPl=mk('td','c-plan');
       const wrap=mk('div','ps-wrap');
 
-      // Auto-populate: if no spec but plans available, assign first plan
-      if(!spec&&avail.length>0){
-        const defAcom=(OP_ACOM_AVAIL[op]||['QUARTO'])[0];
-        equivRows[idx][op]={plan:avail[0],acom:defAcom};
-        // re-read spec after auto-assign
-      }
+      // Respect null — do NOT auto-assign
       const spec2=equivRows[idx][op]; // use updated spec
 
       const selPl=mk('select','sel-plan');
