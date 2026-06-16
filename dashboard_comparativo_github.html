@@ -221,8 +221,13 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f2-fil" onchange="renderM2()"></select></div>
     <div class="fg"><label>Coparticipação</label>
-      <select id="f2-copart" onchange="renderM2()">
-        <option value="" selected>Todas</option><option value="SIM">Com Copart.</option><option value="NÃO">Sem Copart.</option>
+      <select id="f2-copart" multiple size="5" onchange="renderM2()" style="font-size:10px;min-height:80px">
+        <option value="COMPLETA" selected>Completa</option>
+        <option value="COMPLETA 20%">Completa 20%</option>
+        <option value="COMPLETA 30%" selected>Completa 30%</option>
+        <option value="COMPLETA 40%">Completa 40%</option>
+        <option value="PARCIAL">Parcial</option>
+        <option value="">Sem copart.</option>
       </select>
     </div>
   </div>
@@ -267,13 +272,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     </table>
     <div style="padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)">
       <button onclick="applyDist()" style="padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--hap);color:#fff;font-size:12px;font-weight:600">Recalcular</button>
-      <button onclick="resetDist()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text2);font-size:12px;font-weight:600">Restaurar</button>
-      <span id="dist-sum" style="font-size:12px;margin-left:4px"></span>
-    </div>
-  </div>
-</div>
-
-<script>
+      <button onclick="resetDist()" style="padding:6px 14
 const GITHUB_BASE='https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
 let RAW,EQUIV_ROWS;
 
@@ -690,62 +689,84 @@ function renderM1(){
 // ════════════ MODULE 2 — EQUIVALENCY TABLE ════════════
 // Fetch TM for a specific op+plan+acom combination given current filters
 function fetchTM(op, plan, acom, mod){
-  if(!plan)return null;
-  const c=cfg[op][mod];
-  const opI=ei('OPERADORA',op);
-  const plI=ei('NM_PLANO',plan);
-  const acI=ei('ACOMODACAO',acom);
-  const filI=ei('FILIAL',gv('f2-fil')||'');
-  const cpSel2=document.getElementById('f2-copart');
-  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1)
-    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
-  const meiIFTM=gv('f-mei')?ei('MEI',gv('f-mei')):-1;
-  const adesaoIFTM=gv('f-adesao')?ei('TP_ADESAO',gv('f-adesao')):-1;
-  const titIFTM=c.titular?ei('TITULAR',c.titular):-1;
-  const vigIFTM=c.vig?ei('VIGÊNCIA',c.vig):-1;
-  const linhaIFTM=c.linha?ei('LINHA',c.linha):-1;
-  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
-  const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
-  const rows=AGE_D.filter(r=>{
-    if(r[Ai.op]!==opI||r[Ai.pl]!==plI||r[Ai.acom]!==acI)return false;
-    if(filI>=0&&r[Ai.fil]!==filI)return false;
-    if(abrIdxsFTM.length>0&&!abrIdxsFTM.includes(r[Ai.abr]))return false;
-    if(fvI>=0&&r[Ai.fv]!==fvI)return false;
-    if(rIs.length>0&&!rIs.includes(r[Ai.remb]))return false;
-    if(meiIFTM>=0&&r[Ai.mei]!==meiIFTM)return false;
-    if(adesaoIFTM>=0&&r[Ai.tp_adesao]!==adesaoIFTM)return false;
-    if(titIFTM>=0&&r[Ai.titular]!==titIFTM)return false;
-    if(vigIFTM>=0&&r[Ai.vig]!==vigIFTM)return false;
-    if(linhaIFTM>=0&&r[Ai.linha]!==linhaIFTM)return false;
+  if(!plan) return null;
+  const c = cfg[op][mod];
+  const TM = RAW.tm;
+  const TC = RAW.tm_cols;
+  // Build index map for TM columns
+  const Ti = {
+    op:TC.indexOf('OPERADORA'), pl:TC.indexOf('NM_PLANO'),
+    acom:TC.indexOf('ACOMODACAO'), fil:TC.indexOf('FILIAL'),
+    abr:TC.indexOf('ABRANGENCIA'), fv:TC.indexOf('FAIXA_DE_VIDAS'),
+    tp_adesao:TC.indexOf('TP_ADESAO'), mei:TC.indexOf('MEI'),
+    linha:TC.indexOf('LINHA'), remb:TC.indexOf('REEMBOLSO'),
+    titular:TC.indexOf('TITULAR'), vig:TC.indexOf('VIGÊNCIA'),
+    tm:TC.indexOf('TICKET_MEDIO'),
+  };
+  const opI  = ei('OPERADORA', op);
+  const plI  = ei('NM_PLANO', plan);
+  const acI  = ei('ACOMODACAO', acom);
+  const filN = mod === 'm1' ? 1 : 2;
+  const filI = ei('FILIAL', gv('f'+filN+'-fil') || '');
+  const cpSel = document.getElementById('f'+filN+'-copart');
+  const abrIdxs = cpSel
+    ? [...cpSel.selectedOptions].map(o => o.value === '' ? -1 : ei('ABRANGENCIA', o.value)).filter(i => i >= -1)
+    : (ENUMS.ABRANGENCIA || []).map((_, i) => i);
+  const meiI    = gv('f-mei')    ? ei('MEI',      gv('f-mei'))    : -1;
+  const adesaoI = gv('f-adesao') ? ei('TP_ADESAO', gv('f-adesao')): -1;
+  const fvI     = c.fv      ? ei('FAIXA_DE_VIDAS', c.fv)     : -1;
+  const rIs     = (c.remb && c.remb.length) ? c.remb.map(v => ei('REEMBOLSO', v)).filter(i => i >= 0) : [];
+  const titI    = c.titular ? ei('TITULAR',  c.titular) : -1;
+  const vigI    = c.vig     ? ei('VIGÊNCIA', c.vig)     : -1;
+  const linhaI  = c.linha   ? ei('LINHA',    c.linha)   : -1;
+  const rows = TM.filter(r => {
+    if(r[Ti.op] !== opI || r[Ti.pl] !== plI || r[Ti.acom] !== acI) return false;
+    if(filI >= 0 && r[Ti.fil] !== filI) return false;
+    if(abrIdxs.length > 0 && !abrIdxs.includes(r[Ti.abr])) return false;
+    if(fvI >= 0 && r[Ti.fv] !== fvI) return false;
+    if(rIs.length > 0 && !rIs.includes(r[Ti.remb])) return false;
+    if(meiI >= 0 && r[Ti.mei] !== meiI) return false;
+    if(adesaoI >= 0 && r[Ti.tp_adesao] !== adesaoI) return false;
+    if(titI >= 0 && r[Ti.titular] !== titI) return false;
+    if(vigI >= 0 && r[Ti.vig] !== vigI) return false;
+    if(linhaI >= 0 && r[Ti.linha] !== linhaI) return false;
     return true;
   });
-  if(!rows.length)return null;
-  const byFe={};
-  rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!byFe[fe])byFe[fe]={s:0,n:0};byFe[fe].s+=r[Ai.pr];byFe[fe].n++;});
-  let tm=0;FAIXAS.forEach(fe=>{if(byFe[fe])tm+=(byFe[fe].s/byFe[fe].n)*(DIST[fe]||0);});
-  return tm>0?tm*(1+cfg[op].m2.disc/100):null;
+  if(!rows.length) return null;
+  const avg = rows.reduce((s, r) => s + r[Ti.tm], 0) / rows.length;
+  return avg * (1 + (c.disc || 0) / 100);
 }
-
 // Get available plans for an operator given current M2 filters (no plan filter)
 function availPlansForOp(op){
-  const c=cfg[op].m2;
-  const opI=ei('OPERADORA',op);
-  const filI=ei('FILIAL',gv('f2-fil')||'');
-  const cpI=ei('TP_COPART',gv('f2-copart')||'');
-  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
-  const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
-  const s=new Set();
-  AGE_D.forEach(r=>{
-    if(r[Ai.op]!==opI)return;
-    if(filI>=0&&r[Ai.fil]!==filI)return;
-    if(cpI>=0&&r[Ai.cp]!==cpI)return;
-    if(fvI>=0&&r[Ai.fv]!==fvI)return;
-    if(rIs.length&&!rIs.includes(r[Ai.remb]))return;
-    s.add(dv('NM_PLANO',r[Ai.pl]));
+  // Use RAW.tm so M2 works before AGE_D loads
+  const TM = RAW.tm;
+  const TC = RAW.tm_cols;
+  const opI  = ei('OPERADORA', op);
+  const filI = ei('FILIAL', gv('f2-fil') || '');
+  const cpSel = document.getElementById('f2-copart');
+  const abrIdxs = cpSel
+    ? [...cpSel.selectedOptions].map(o => o.value === '' ? -1 : ei('ABRANGENCIA', o.value)).filter(i => i >= -1)
+    : [];
+  const Ti = {
+    op:TC.indexOf('OPERADORA'), pl:TC.indexOf('NM_PLANO'),
+    fil:TC.indexOf('FILIAL'), abr:TC.indexOf('ABRANGENCIA'),
+    fv:TC.indexOf('FAIXA_DE_VIDAS'), remb:TC.indexOf('REEMBOLSO'),
+  };
+  const c = cfg[op].m2;
+  const fvI = c.fv ? ei('FAIXA_DE_VIDAS', c.fv) : -1;
+  const rIs = (c.remb && c.remb.length) ? c.remb.map(v => ei('REEMBOLSO', v)).filter(i => i >= 0) : [];
+  const plans = new Set();
+  TM.forEach(r => {
+    if(r[Ti.op] !== opI) return;
+    if(filI >= 0 && r[Ti.fil] !== filI) return;
+    if(abrIdxs.length > 0 && !abrIdxs.includes(r[Ti.abr])) return;
+    if(fvI >= 0 && r[Ti.fv] !== fvI) return;
+    if(rIs.length > 0 && !rIs.includes(r[Ti.remb])) return;
+    const pname = ENUMS.NM_PLANO[r[Ti.pl]];
+    if(pname) plans.add(pname);
   });
-  return [...s].sort();
+  return [...plans].sort();
 }
-
 function renderM2(){
   const {ops,anchor}=state.m2;
   const thead=document.getElementById('m2-thead');
