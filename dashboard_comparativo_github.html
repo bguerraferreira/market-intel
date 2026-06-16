@@ -31,7 +31,7 @@ header h1{font-size:15px;font-weight:700;color:var(--text)}
 .tab:hover{color:var(--text);background:var(--bg3)}
 .tab.active{color:var(--hap);border-bottom-color:var(--hap)}
 
-.panel{display:none;padding:10px 16px}.panel.active{display:block}
+.panel{display:none;padding:14px 20px}.panel.active{display:block}
 
 /* FILTER BAR */
 .fbar{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;box-shadow:var(--shadow)}
@@ -61,7 +61,7 @@ select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
 .opbar{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
 .opbar-hdr{padding:7px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
 .opbar-body{display:flex;overflow-x:auto}
-.op-col{flex:1;min-width:145px;border-right:1px solid var(--border);padding:7px 8px 10px}
+.op-col{flex:1;min-width:170px;border-right:1px solid var(--border);padding:10px 10px 12px}
 .op-col:last-child{border-right:none}
 .op-col.is-anc{background:var(--hap-lt)}
 .op-col-hdr{display:flex;align-items:center;gap:5px;margin-bottom:8px}
@@ -72,12 +72,12 @@ select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
 .op-col-fields select,.op-col-fields input{width:100%;min-width:unset;font-size:11px}
 
 /* CARDS */
-.cards{display:flex;gap:0;margin-bottom:0;flex-wrap:nowrap;border:1px solid var(--border);border-radius:10px 10px 0 0;overflow:hidden;box-shadow:var(--shadow)}
-.card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 10px;flex:1;min-width:100px;box-shadow:var(--shadow);border-top:3px solid transparent}
-.card-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px}
-.card-val{font-size:16px;font-weight:800;line-height:1.1}
-.card-diff{font-size:10px;font-weight:700;margin-top:1px}
-.card-sub{font-size:9px;color:var(--text2);margin-top:2px}
+.cards{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:130px;box-shadow:var(--shadow);border-top:3px solid transparent}
+.card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.card-val{font-size:19px;font-weight:800;line-height:1.1}
+.card-diff{font-size:11px;font-weight:700;margin-top:2px}
+.card-sub{font-size:10px;color:var(--text2);margin-top:3px}
 
 /* TABLES */
 .twrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;max-height:60vh;box-shadow:var(--shadow)}
@@ -100,76 +100,44 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 .d-same{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 
 /* ──── MODULE 2 EQUIVALENCY TABLE ──── */
-.m2-wrap{background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:auto;box-shadow:none;max-height:68vh}
-
-/* table-layout:fixed + colgroup enforce exact pixel widths */
-.eq-table{border-collapse:collapse;width:100%;font-size:11px;table-layout:fixed}
+.m2-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:var(--shadow);max-height:65vh}
+.eq-table{border-collapse:collapse;width:100%;font-size:12px}
+/* sticky double header */
 .eq-table thead{position:sticky;top:0;z-index:3}
-
-/* Header row 1 — operator name, single line, aligned to column group */
-.eq-table thead tr.hdr-r1 th{
-  background:#fff;padding:4px 0;font-size:11px;font-weight:700;
-  text-align:center;border-bottom:1px solid var(--border);
-  border-right:2px solid var(--border2);overflow:hidden;
-  white-space:nowrap;text-overflow:ellipsis;height:26px;line-height:18px}
-.eq-table thead tr.hdr-r1 th:last-child{border-right:none}
-.eq-table thead tr.hdr-r1 th.anc-grp{background:var(--hap-lt)}
-.eq-table thead tr.hdr-r1 th.th-num{
-  border-right:2px solid var(--border2);background:var(--bg3);font-size:9px;color:var(--text2)}
-
-/* Header row 2 — sub-columns, exactly under each col */
-.eq-table thead tr.hdr-r2 th{
-  background:var(--bg3);padding:3px 4px;font-size:9px;font-weight:700;
-  color:var(--text2);border-bottom:2px solid var(--border);
-  white-space:nowrap;text-align:right;height:20px;line-height:14px}
-.eq-table thead tr.hdr-r2 th.sub-plan{text-align:left;border-left:2px solid var(--border2)}
-.eq-table thead tr.hdr-r2 th.sub-anc{background:var(--hap-lt)}
-.eq-table thead tr.hdr-r2 th.sub-num{border-right:2px solid var(--border2);text-align:center}
-
-/* Body */
+/* row 1: operator group headers */
+.eq-table .r1-th{background:#fff;padding:6px 10px;font-size:11px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;border-right:1px solid var(--border)}
+.eq-table .r1-th:last-child{border-right:none}
+.eq-table .r1-th.anc-grp{background:var(--hap-lt)}
+/* row 2: sub-column headers */
+.eq-table .r2-th{background:var(--bg3);padding:4px 8px;font-size:10px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:right}
+.eq-table .r2-th.r2-plan{text-align:left;border-left:2px solid var(--border2)}
+.eq-table .r2-th.r2-anc{background:var(--hap-lt)}
+/* body rows */
 .eq-table tbody tr.eq-row:hover td{background:var(--bg3)}
 .eq-table tbody tr.eq-row:nth-child(even) td{background:var(--bg)}
 .eq-table tbody tr.eq-row.dragging td{opacity:.35}
-.eq-table tbody td{padding:4px 4px;border-bottom:1px solid var(--border);vertical-align:middle}
-
-/* Drag/num cell */
-.eq-table td.c-num{
-  text-align:center;color:var(--text3);font-size:9px;
-  border-right:2px solid var(--border2);cursor:grab;user-select:none}
+.eq-table tbody tr.eq-row.drag-over td.c-plan:first-of-type{border-top:3px solid var(--hap)}
+.eq-table tbody td{padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+/* row-number / drag col */
+.eq-table td.c-num{width:28px;min-width:28px;text-align:center;color:var(--text3);font-size:10px;border-right:2px solid var(--border2);cursor:grab;user-select:none;padding:4px 6px}
 .eq-table td.c-num:hover{color:var(--hap);background:var(--hap-lt)!important}
-
-/* Plan cell — full width of the plan column, no overflow */
-.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);padding:3px 3px}
-.c-plan .ps-wrap{display:flex;gap:2px;align-items:center;width:100%}
-/* plan select fills remaining space after acom */
-.c-plan select.sel-plan{
-  flex:1;min-width:0;font-size:9px;height:20px;
-  border:1px solid var(--border);border-radius:3px;
-  background:var(--bg3);color:var(--text);padding:0 2px}
-.c-plan select.sel-acom{
-  width:42px;flex-shrink:0;font-size:9px;height:20px;
-  border:1px solid var(--border);border-radius:3px;
-  background:var(--bg3);color:var(--text2);padding:0 1px}
+/* plan selector cell */
+.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);min-width:155px;max-width:200px}
+.c-plan .ps-wrap{display:flex;gap:3px;align-items:center}
+.c-plan select.sel-plan{flex:1;font-size:10px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text);padding:0 3px;min-width:0}
+.c-plan select.sel-acom{width:44px;flex-shrink:0;font-size:9px;height:22px;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text2);padding:0 2px}
 .c-plan select:focus{outline:none;border-color:var(--hap);background:#fff}
-
-/* Ticket cell */
-.eq-table td.c-tm{
-  text-align:right;white-space:nowrap;font-weight:700;font-size:11px;
-  padding:4px 4px}
-
-/* Diff cell */
-.eq-table td.c-diff{text-align:right;white-space:nowrap;padding:4px 3px}
-
-/* Diff badges */
-.diff{display:inline-block;font-size:8px;font-weight:700;padding:1px 3px;border-radius:3px}
+/* ticket cell */
+.eq-table td.c-tm{text-align:right;white-space:nowrap;min-width:85px;font-weight:700}
+/* diff cell */
+.eq-table td.c-diff{text-align:right;white-space:nowrap;min-width:55px}
+/* diff badges */
+.diff{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px}
 .d-above{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
 .d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
-
-/* Footer */
-.eq-footer{display:flex;align-items:center;gap:8px;padding:6px 12px;
-  border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
-.eq-footer button{padding:3px 10px;border-radius:5px;border:1px dashed var(--border2);
-  background:transparent;cursor:pointer;color:var(--text2);font-size:10px;font-weight:600}
+/* footer add-row */
+.eq-footer{display:flex;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
+.eq-footer button{padding:4px 12px;border-radius:5px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:11px;font-weight:600;transition:all .15s}
 .eq-footer button:hover{border-color:var(--hap);color:var(--hap);background:var(--hap-lt)}
 
 /* LOADING */
@@ -183,11 +151,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 </style>
 </head>
 <body>
-<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt" id="loading-text">Conectando ao repositório...</div>
-  <div style="width:220px;height:4px;background:#e8eaf0;border-radius:2px;margin-top:10px;overflow:hidden">
-    <div id="loading-bar" style="width:0%;height:100%;background:var(--hap);border-radius:2px;transition:width 0.3s ease"></div>
-  </div>
-</div>
+<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt">Carregando base de preços...</div></div>
 
 <header>
   <div class="logo">H</div>
@@ -204,18 +168,22 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 
 <!-- M1 -->
 <div id="panel-m1" class="panel active">
+  <div id="m1-loading-msg" style="display:none;text-align:center;padding:30px;color:var(--text2)">
+    <div style="font-size:24px;margin-bottom:8px">⏳</div>
+    Carregando dados de faixa etária...<br>
+    <span style="font-size:11px">Módulos 2, 3 e 4 já disponíveis</span>
+  </div>
   <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m1"></div></div>
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f1-fil" onchange="renderM1()"></select></div>
     <div class="fg"><label>Acomodação</label>
       <select id="f1-acom" onchange="renderM1()">
-        <option value="ENF" selected>Enfermaria</option>
+        <option value="">Todas</option><option value="ENF">Enfermaria</option>
         <option value="QUARTO">Quarto</option><option value="AMB">Ambulatorial</option>
-        <option value="">Todas</option>
       </select>
     </div>
     <div class="fg"><label>Coparticipação</label>
-      <select id="f1-copart" multiple size="5" onchange="renderM1()" style="font-size:10px;height:auto">
+      <select id="f1-copart" multiple size="5" onchange="renderM1()" style="font-size:10px;min-height:80px">
         <option value="COMPLETA" selected>Completa</option>
         <option value="COMPLETA 20%">Completa 20%</option>
         <option value="COMPLETA 30%" selected>Completa 30%</option>
@@ -226,12 +194,21 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     </div>
     <div class="fg"><label>MEI</label>
       <select id="f-mei" onchange="renderM1();renderM2()">
-        <option value="">Todos</option><option value="Não MEI">Não MEI</option><option value="MEI">MEI</option>
+        <option value="">Todos</option>
+        <option value="NÃO MEI">Não MEI</option>
+        <option value="MEI">MEI</option>
       </select>
     </div>
     <div class="fg"><label>Tipo de Adesão</label>
       <select id="f-adesao" onchange="renderM1();renderM2()">
-        <option value="">Todos</option><option value="OPCIONAL">Opcional</option><option value="Compulsória">Compulsória</option>
+        <option value="">Todos</option>
+        <option value="OPCIONAL">Opcional</option>
+        <option value="COMPULSÓRIA">Compulsória</option>
+      </select>
+    </div>
+    <div class="fg"><label>UF</label>
+      <select id="f-uf" onchange="renderM1();renderM2()">
+        <option value="">Todas</option>
       </select>
     </div>
   </div>
@@ -252,12 +229,10 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     </div>
   </div>
   <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m2"></div></div>
-  <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:0">
-  <div class="cards" id="cards-m2" style="border-bottom:2px solid var(--border2)"></div>
+  <div class="cards" id="cards-m2"></div>
   <div class="m2-wrap" id="m2-wrap">
     <table class="eq-table" id="tbl-m2"><thead id="m2-thead"></thead><tbody id="m2-tbody"></tbody></table>
-    <div class="eq-footer"><button onclick="addEquivRow()">＋ Adicionar linha de equivalência</button><span style="font-size:10px;color:var(--text2)">Arraste as linhas para reordenar</span></div>
-  </div>
+    <div class="add-equiv-row"><button onclick="addEquivRow()">＋ Adicionar linha de equivalência</button><span style="font-size:10px;color:var(--text2)">Arraste as linhas para reordenar</span></div>
   </div>
 </div>
 
@@ -301,32 +276,19 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════════════
-// CONFIGURAÇÃO — altere apenas esta URL para apontar para seu repositório
-// ════════════════════════════════════════════════════════════════════
 const GITHUB_BASE = 'https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
-// Exemplo: 'https://raw.githubusercontent.com/brunohapvida/market-intel/main/dados/'
 
-// ════════════════════════════════════════════════════════════════════
-// LOADING — busca os 4 arquivos em paralelo do GitHub
-// ════════════════════════════════════════════════════════════════════
 async function loadData() {
   const loadEl = document.getElementById('loading');
   const loadTxt = document.getElementById('loading-text');
   const loadBar = document.getElementById('loading-bar');
 
-  function setMsg(msg) { 
-    if(loadTxt) loadTxt.textContent = msg;
-    console.log('[Dashboard]', msg);
-  }
-  function setProgress(pct) {
-    if(loadBar) loadBar.style.width = pct + '%';
-  }
+  function setMsg(msg) { if(loadTxt) loadTxt.textContent = msg; console.log('[Dashboard]', msg); }
+  function setProgress(pct) { if(loadBar) loadBar.style.width = Math.min(100,pct) + '%'; }
 
-  // Fetch with progress tracking using ReadableStream
   async function fetchWithProgress(url, label, onProgress) {
     const res = await fetch(url);
-    if(!res.ok) throw new Error(`Erro ao carregar ${label}: ${res.status}`);
+    if(!res.ok) throw new Error('Erro ' + label + ': ' + res.status + ' — verifique a URL do repositório.');
     const total = parseInt(res.headers.get('content-length') || '0');
     let loaded = 0;
     const reader = res.body.getReader();
@@ -336,125 +298,85 @@ async function loadData() {
       if(done) break;
       chunks.push(value);
       loaded += value.length;
-      if(total > 0 && onProgress) onProgress(loaded/total);
+      if(total > 0 && onProgress) onProgress(loaded / total);
     }
-    const blob = new Blob(chunks);
-    return JSON.parse(await blob.text());
+    return JSON.parse(await new Blob(chunks).text());
   }
 
-  const timeout = setTimeout(()=>{
-    if(loadEl && loadEl.style.display !== 'none'){
-      loadEl.innerHTML = `<div style="text-align:center;padding:40px;max-width:500px">
-        <div style="font-size:28px;margin-bottom:12px">⏱️</div>
-        <div style="font-size:14px;font-weight:700;color:#c82020;margin-bottom:8px">Tempo esgotado</div>
-        <div style="font-size:11px;color:#5a6484;margin-bottom:12px">Os dados estão demorando. Verifique sua conexão.</div>
-        <button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">Tentar novamente</button>
-      </div>`;
-    }
-  }, 120000);
-
   try {
-    setMsg('Conectando ao repositório...'); setProgress(2);
+    // FASE 1: meta (2.5MB) + equiv → abre M2/M3/M4 imediatamente
+    setMsg('Carregando dados...'); setProgress(5);
+    const [meta, equivData] = await Promise.all([
+      fetchWithProgress(GITHUB_BASE + 'data_meta.json', 'meta', p => setProgress(5 + p*60)),
+      fetchWithProgress(GITHUB_BASE + 'data_equiv.json', 'equiv'),
+    ]);
+    setProgress(68);
 
-    setMsg('Carregando metadados...');
-    const meta = await fetchWithProgress(GITHUB_BASE+'data_meta.json','meta');
-    setProgress(10);
-
-    setMsg('Carregando preços — parte 1/2...');
-    const age1Data = await fetchWithProgress(GITHUB_BASE+'data_age_1.json','age_1',
-      p=>setProgress(10+p*38));
-    setProgress(48);
-
-    setMsg('Carregando preços — parte 2/2...');
-    const age2Data = await fetchWithProgress(GITHUB_BASE+'data_age_2.json','age_2',
-      p=>setProgress(48+p*38));
-    setProgress(90);
-
-    setMsg('Finalizando...');
-    const equivData = await fetchWithProgress(GITHUB_BASE+'data_equiv.json','equiv');
-    setProgress(96);
-
-    // Merge the two age parts
-    const ageData = { age: [...age1Data.age, ...age2Data.age] };
-
-    // Assemble the RAW object that the app expects
     window.RAW = {
-      enums:       meta.enums,
-      age_cols:    meta.age_cols,
-      tm_cols:     meta.tm_cols,
-      dist_etaria: meta.dist_etaria,
-      age:         ageData.age,
-      tm:          tmData.tm,
+      enums: meta.enums, age_cols: meta.age_cols,
+      tm_cols: meta.tm_cols, dist_etaria: meta.dist_etaria,
+      age: [], tm: meta.tm,
     };
     window.EQUIV_ROWS_LOADED = equivData;
 
-    clearTimeout(timeout);
-    setMsg('Inicializando dashboard...');
-    try {
-      initApp();
-    } catch(initErr) {
-      console.error('[Dashboard] initApp error:', initErr);
-      throw new Error('Erro ao inicializar: ' + initErr.message);
-    }
+    setMsg('Inicializando...'); setProgress(72);
+    try { initApp(); } catch(e) { console.error('initApp:', e); throw e; }
+
+    // Mostra dashboard, vai para M2
+    if(loadEl) loadEl.style.display = 'none';
+    switchTab('m2');
+
+    // Sinaliza M1 como carregando
+    const m1btn = document.querySelector('[onclick=\"switchTab(\'m1\')\"]');
+    if(m1btn) { m1btn.style.opacity='0.5'; m1btn.title='Faixa etária: carregando...'; }
+    const m1msg = document.getElementById('m1-loading-msg');
+    if(m1msg) m1msg.style.display = 'block';
+
+    // FASE 2: age em background → habilita M1
+    const age1 = await fetchWithProgress(GITHUB_BASE + 'data_age_1.json', 'age_1', p => setProgress(72 + p*13));
+    setProgress(85);
+    const age2 = await fetchWithProgress(GITHUB_BASE + 'data_age_2.json', 'age_2', p => setProgress(85 + p*14));
+    setProgress(100);
+
+    window.RAW.age = [...age1.age, ...age2.age];
+    window.AGE_D   = window.RAW.age;
+
+    if(m1btn) { m1btn.style.opacity='1'; m1btn.title=''; }
+    if(m1msg) m1msg.style.display = 'none';
+    console.log('[Dashboard] M1 pronto —', window.RAW.age.length, 'linhas');
 
   } catch(err) {
+    console.error('[Dashboard]', err);
     if(loadEl) {
-      loadEl.innerHTML = `
-        <div style="text-align:center;padding:40px;max-width:500px">
-          <div style="font-size:32px;margin-bottom:12px">⚠️</div>
-          <div style="font-size:15px;font-weight:700;color:#c82020;margin-bottom:8px">Erro ao carregar dados</div>
-          <div style="font-size:12px;color:#5a6484;margin-bottom:16px">${err.message}</div>
-          <div style="font-size:11px;color:#9aa3bf;background:#eef1f8;padding:12px;border-radius:6px;text-align:left">
-            <strong>Verifique:</strong><br>
-            1. A URL em GITHUB_BASE está correta?<br>
-            2. O repositório é público?<br>
-            3. Os 4 arquivos JSON estão na pasta configurada?<br>
-            4. Os nomes dos arquivos estão corretos? (data_meta.json, data_age_1.json, data_age_2.json, data_equiv.json)
-          </div>
-          <button onclick="location.reload()" style="margin-top:16px;padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">
-            Tentar novamente
-          </button>
-        </div>`;
+      loadEl.style.display = 'flex';
+      loadEl.innerHTML = '<div style="text-align:center;padding:40px;max-width:500px">' +
+        '<div style="font-size:28px;margin-bottom:10px">⚠️</div>' +
+        '<div style="font-size:14px;font-weight:700;color:#c82020;margin-bottom:8px">Erro ao carregar</div>' +
+        '<div style="font-size:12px;color:#5a6484;margin-bottom:14px">' + err.message + '</div>' +
+        '<button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">Tentar novamente</button>' +
+        '</div>';
     }
   }
 }
 
-// ════════════════════════════════════════════════════════════════════
-// APP — inicializado após carregamento dos dados
-// ════════════════════════════════════════════════════════════════════
 let RAW, EQUIV_ROWS;
-
 function initApp() {
   RAW = window.RAW;
   EQUIV_ROWS = window.EQUIV_ROWS_LOADED;
 
-const ENUMS=RAW.enums, AGE_C=RAW.age_cols, AGE_D=RAW.age;
-const FAIXAS=['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
-let DIST={...RAW.dist_etaria};
-const DIST0={...RAW.dist_etaria};
-const ALL_OPS=[...ENUMS['OPERADORA']]; // 11 operators
-
-const OP_COLOR={
-  HAPVIDA:'#E84118',AMIL:'#2563eb',BRADESCO:'#c82020',
-  SULAMERICA:'#b45309',PORTO:'#6d28d9',
-  'CARE PLUS':'#0891b2','OMINT':'#0d9488',
-  SELECT:'#64748b','SEG. UNIMED':'#16a34a',
-  ALICE:'#db2777','SÃO BERNARDO':'#7c3aed',
-};
 function oc(op){return OP_COLOR[op]||'#5a6484';}
 
 // Col indices — declared BEFORE OP_FV to avoid ReferenceError
 const Ai={
-  dt:AGE_C.indexOf('DT_EXPORTACAO'),fil:AGE_C.indexOf('FILIAL'),
-  op:AGE_C.indexOf('OPERADORA'),pl:AGE_C.indexOf('NM_PLANO'),
-  abr:AGE_C.indexOf('ABRANGENCIA'),acom:AGE_C.indexOf('ACOMODACAO'),
-  fv:AGE_C.indexOf('FAIXA_DE_VIDAS'),adesao:AGE_C.indexOf('TP_ADESAO'),
-  mei:AGE_C.indexOf('MEI'),linha:AGE_C.indexOf('LINHA'),
-  remb:AGE_C.indexOf('REEMBOLSO'),titular:AGE_C.indexOf('TITULAR'),
-  vig:AGE_C.indexOf('VIGÊNCIA'),fe:AGE_C.indexOf('FAIXA_ETARIA'),
-  pr:AGE_C.indexOf('PRECO'),
-  cp:-1 // TP_COPART removed (replaced by ABRANGENCIA)
-};
+  dt:AGE_C.indexOf('DT_EXPORTACAO'),uf:AGE_C.indexOf('UF'),
+  fil:AGE_C.indexOf('FILIAL'),op:AGE_C.indexOf('OPERADORA'),
+  pl:AGE_C.indexOf('NM_PLANO'),abr:AGE_C.indexOf('ABRANGENCIA'),
+  acom:AGE_C.indexOf('ACOMODACAO'),fv:AGE_C.indexOf('FAIXA_DE_VIDAS'),
+  tp_adesao:AGE_C.indexOf('TP_ADESAO'),mei:AGE_C.indexOf('MEI'),
+  linha:AGE_C.indexOf('LINHA'),remb:AGE_C.indexOf('REEMBOLSO'),
+  titular:AGE_C.indexOf('TITULAR'),vig:AGE_C.indexOf('VIGÊNCIA'),
+  fe:AGE_C.indexOf('FAIXA_ETARIA'),pr:AGE_C.indexOf('PRECO'),cp:-1,
+}
 
 // Precompute available faixas de vidas per operator
 const OP_FV={};
@@ -465,6 +387,10 @@ ALL_OPS.forEach(op=>{
   OP_FV[op]=[...s].sort();
 });
 
+const OP_PLAN_DEFAULT_M1={
+  HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',
+  SULAMERICA:'DIRETO NACIONAL',PORTO:'P220',
+};
 const OP_FV_DEFAULT={
   HAPVIDA:'2 A 29',AMIL:'5 A 29',BRADESCO:'3 A 29',SULAMERICA:'5 A 29',PORTO:'3 A 29',
   'CARE PLUS':'2 A 29',OMINT:'4 A 29','SEG. UNIMED':'','SELECT':'',ALICE:'','SÃO BERNARDO':''
@@ -497,19 +423,13 @@ const OP_ACOM_AVAIL={
 
 const state={
   m1:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
-  m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA'],anchor:'HAPVIDA'},
+  m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
 };
 const cfg={};
-// Default plans for Module 1
-const OP_PLAN_DEFAULT_M1={
-  HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',
-  SULAMERICA:'DIRETO NACIONAL',PORTO:'P220',
-};
 ALL_OPS.forEach(op=>{
   const defRemb=(OP_REMB_DEFAULT[op]||['SEM REEMBOLSO','PARCIAL']).slice();
   cfg[op]={
-    m1:{plan:OP_PLAN_DEFAULT_M1[op]||'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',
-        disc:0,titular:'',vig:'',linha:''},
+    m1:{plan:OP_PLAN_DEFAULT_M1[op]||'',remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0,titular:'',vig:'',linha:''},
     m2:{remb:defRemb.slice(),fv:OP_FV_DEFAULT[op]||'',disc:0,titular:'',vig:'',linha:''},
   };
 });
@@ -525,6 +445,13 @@ function gv(id){const e=document.getElementById(id);return e?e.value:'';}
 
 // ════════════ INIT ════════════
 function init(){
+  // Populate UF filter
+  const ufSel=document.getElementById('f-uf');
+  if(ufSel&&ENUMS.UF){
+    [...ENUMS.UF].sort().forEach(u=>{
+      const o=mk('option');o.value=u;o.textContent=u;ufSel.appendChild(o);
+    });
+  }
   const fils=[...ENUMS.FILIAL].sort();
   ['f1-fil','f2-fil','f3-fil'].forEach(id=>{
     const s=document.getElementById(id);
@@ -619,14 +546,9 @@ function buildOpBar(mod){
     (OP_FV[op]||[]).forEach(f=>{const o=mk('option');o.value=f;o.textContent=f;if(f===c.fv)o.selected=true;selFv.appendChild(o);});
     selFv.onchange=()=>{c.fv=selFv.value;doRender(mod);};
     fgFv.append(lFv,selFv);fields.appendChild(fgFv);
-    // Simulador %
-    const fgD=mk('div','fg');const lD=mk('label');lD.textContent='Simulador %';
-    const inpD=mk('input');inpD.type='number';inpD.step='0.1';inpD.value=c.disc;
-    inpD.onchange=()=>{c.disc=parseFloat(inpD.value)||0;doRender(mod);};
-    fgD.append(lD,inpD);fields.appendChild(fgD);
     // Titular
     const fgTit=mk('div','fg');const lTit=mk('label');lTit.textContent='Titular';
-    const selTit=mk('select');selTit.id='titular-'+mod+'-'+op;
+    const selTit=mk('select');
     selTit.innerHTML='<option value="">Todos</option>';
     (ENUMS.TITULAR||['1','2']).forEach(v=>{
       const o=mk('option');o.value=v;o.textContent=v+' titular'+(v==='1'?'':'es');
@@ -636,7 +558,7 @@ function buildOpBar(mod){
     fgTit.append(lTit,selTit);fields.appendChild(fgTit);
     // Vigência
     const fgVig=mk('div','fg');const lVig=mk('label');lVig.textContent='Vigência';
-    const selVig=mk('select');selVig.id='vig-'+mod+'-'+op;
+    const selVig=mk('select');
     selVig.innerHTML='<option value="">Todas</option>';
     (ENUMS.VIGÊNCIA||['12','24']).forEach(v=>{
       const o=mk('option');o.value=v;o.textContent=v+' meses';
@@ -644,22 +566,22 @@ function buildOpBar(mod){
     });
     selVig.onchange=()=>{c.vig=selVig.value;doRender(mod);};
     fgVig.append(lVig,selVig);fields.appendChild(fgVig);
-    // Linha (só exibe se op tiver linhas)
-    const opLinhas=(ENUMS.LINHA||[]).filter(l=>{
-      const opI=ei('OPERADORA',op);
-      return AGE_D.some(r=>r[Ai.op]===opI&&r[Ai.linha]===ei('LINHA',l));
-    });
-    if(opLinhas.length>0){
-      const fgLinha=mk('div','fg');const lLinha=mk('label');lLinha.textContent='Linha';
-      const selLinha=mk('select');selLinha.id='linha-'+mod+'-'+op;
-      selLinha.innerHTML='<option value="">Todas</option>';
-      opLinhas.forEach(v=>{
-        const o=mk('option');o.value=v;o.textContent=v;
-        if(v===c.linha)o.selected=true;selLinha.appendChild(o);
-      });
-      selLinha.onchange=()=>{c.linha=selLinha.value;doRender(mod);};
-      fgLinha.append(lLinha,selLinha);fields.appendChild(fgLinha);
+    // Linha
+    const opI_l=ei('OPERADORA',op);
+    const opLinhas=(ENUMS.LINHA||[]).filter(l=>AGE_D.some(r=>r[Ai.op]===opI_l&&r[Ai.linha]===ei('LINHA',l)));
+    if(opLinhas.length>1){
+      const fgL=mk('div','fg');const lL=mk('label');lL.textContent='Linha';
+      const selL=mk('select');
+      selL.innerHTML='<option value="">Todas</option>';
+      opLinhas.forEach(v=>{const o=mk('option');o.value=v;o.textContent=v;if(v===c.linha)o.selected=true;selL.appendChild(o);});
+      selL.onchange=()=>{c.linha=selL.value;doRender(mod);};
+      fgL.append(lL,selL);fields.appendChild(fgL);
     }
+    // Simulador %
+    const fgD=mk('div','fg');const lD=mk('label');lD.textContent='Simulador %';
+    const inpD=mk('input');inpD.type='number';inpD.step='0.1';inpD.value=c.disc;
+    inpD.onchange=()=>{c.disc=parseFloat(inpD.value)||0;doRender(mod);};
+    fgD.append(lD,inpD);fields.appendChild(fgD);
     col.appendChild(fields);body.appendChild(col);
   });
 }
@@ -668,20 +590,24 @@ function buildOpBar(mod){
 function filterRows(op,mod){
   const c=cfg[op][mod];
   const opI=ei('OPERADORA',op);
-  const filI=ei('FILIAL',gv('f'+(mod==='m1'?1:2)+'-fil')||'');
+  const filN=mod==='m1'?1:2;
+  const filI=ei('FILIAL',gv('f'+filN+'-fil')||'');
   const acI=mod==='m1'?ei('ACOMODACAO',gv('f1-acom')||''):-1;
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
-  // Global filters
+  // Coparticipação: multi-select de ABRANGENCIA
+  const cpSel=document.getElementById('f'+filN+'-copart');
+  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
+    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
+  // Filtros globais
+  const ufVal=gv('f-uf')||'';
+  const ufI=ufVal?ei('UF',ufVal):-1;
   const meiVal=gv('f-mei')||'';
   const adesaoVal=gv('f-adesao')||'';
   const meiI=meiVal?ei('MEI',meiVal):-1;
   const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
-  // Coparticipação multi-select ABRANGENCIA
-  const cpSel=document.getElementById('f'+(mod==='m1'?1:2)+'-copart');
-  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value?ei('ABRANGENCIA',o.value):-2).filter(i=>i>=-1):(ENUMS.ABRANGENCIA?ENUMS.ABRANGENCIA.map((_,i)=>i):[]);
-  // Per-op filters (titular, vigência, linha)
+  // Filtros por operadora
   const titI=c.titular?ei('TITULAR',c.titular):-1;
   const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
   const linhaI=c.linha?ei('LINHA',c.linha):-1;
@@ -692,10 +618,10 @@ function filterRows(op,mod){
     if(fvI>=0&&r[Ai.fv]!==fvI) return false;
     if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
     if(plI>=0&&r[Ai.pl]!==plI) return false;
-    // Copart via ABRANGENCIA multi-select
     if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr])) return false;
+    if(ufI>=0&&r[Ai.uf]!==ufI) return false;
     if(meiI>=0&&r[Ai.mei]!==meiI) return false;
-    if(adesaoI>=0&&r[Ai.adesao]!==adesaoI) return false;
+    if(adesaoI>=0&&r[Ai.tp_adesao]!==adesaoI) return false;
     if(titI>=0&&r[Ai.titular]!==titI) return false;
     if(vigI>=0&&r[Ai.vig]!==vigI) return false;
     if(linhaI>=0&&r[Ai.linha]!==linhaI) return false;
@@ -802,32 +728,24 @@ function fetchTM(op, plan, acom, mod){
   const opI=ei('OPERADORA',op);
   const plI=ei('NM_PLANO',plan);
   const acI=ei('ACOMODACAO',acom);
-  const filNum=mod==='m1'?1:2;
-  const filI=ei('FILIAL',gv('f'+filNum+'-fil')||'');
-  const cpSelFTM=document.getElementById('f'+filNum+'-copart');
-  const abrIdxsFTM=cpSelFTM?[...cpSelFTM.selectedOptions].map(o=>o.value?ei('ABRANGENCIA',o.value):-2).filter(i=>i>=-1):[];
-  const meiVal=gv('f-mei')||'';
-  const adesaoVal=gv('f-adesao')||'';
+  const filI=ei('FILIAL',gv('f2-fil')||'');
+  const cpSel2=document.getElementById('f2-copart');
+  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
+    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
+  const meiValFTM=gv('f-mei')||'';
+  const adesaoValFTM=gv('f-adesao')||'';
+  const meiIFTM=meiValFTM?ei('MEI',meiValFTM):-1;
+  const adesaoIFTM=adesaoValFTM?ei('TP_ADESAO',adesaoValFTM):-1;
+  const titIFTM=c.titular?ei('TITULAR',c.titular):-1;
+  const vigIFTM=c.vig?ei('VIGÊNCIA',c.vig):-1;
+  const linhaIFTM=c.linha?ei('LINHA',c.linha):-1;
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
-  const titI=c.titular?ei('TITULAR',c.titular):-1;
-  const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
-  const linhaI=c.linha?ei('LINHA',c.linha):-1;
-  const meiI=meiVal?ei('MEI',meiVal):-1;
-  const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
-  const rows=AGE_D.filter(r=>{
-    if(r[Ai.op]!==opI||r[Ai.pl]!==plI||r[Ai.acom]!==acI) return false;
-    if(filI>=0&&r[Ai.fil]!==filI) return false;
-    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr])) return false;
-    if(fvI>=0&&r[Ai.fv]!==fvI) return false;
-    if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
-    if(meiI>=0&&r[Ai.mei]!==meiI) return false;
-    if(adesaoI>=0&&r[Ai.adesao]!==adesaoI) return false;
-    if(titI>=0&&r[Ai.titular]!==titI) return false;
-    if(vigI>=0&&r[Ai.vig]!==vigI) return false;
-    if(linhaI>=0&&r[Ai.linha]!==linhaI) return false;
-    return true;
-  });
+  const rows=AGE_D.filter(r=>
+    r[Ai.op]===opI&&r[Ai.pl]===plI&&r[Ai.acom]===acI&&
+    (filI<0||r[Ai.fil]===filI)&&(abrIdxsFTM.length===0||abrIdxsFTM.includes(r[Ai.abr]))&&(meiIFTM<0||r[Ai.mei]===meiIFTM)&&(adesaoIFTM<0||r[Ai.tp_adesao]===adesaoIFTM)&&(titIFTM<0||r[Ai.titular]===titIFTM)&&(vigIFTM<0||r[Ai.vig]===vigIFTM)&&(linhaIFTM<0||r[Ai.linha]===linhaIFTM)&&
+    (fvI<0||r[Ai.fv]===fvI)&&(rIs.length===0||rIs.includes(r[Ai.remb]))
+  );
   if(!rows.length)return null;
   const byFe={};
   rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!byFe[fe])byFe[fe]={s:0,n:0};byFe[fe].s+=r[Ai.pr];byFe[fe].n++;});
@@ -840,7 +758,16 @@ function availPlansForOp(op){
   const c=cfg[op].m2;
   const opI=ei('OPERADORA',op);
   const filI=ei('FILIAL',gv('f2-fil')||'');
-  const cpI=ei('TP_COPART',gv('f2-copart')||'');
+  const cpSel2=document.getElementById('f2-copart');
+  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
+    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
+  const meiValFTM=gv('f-mei')||'';
+  const adesaoValFTM=gv('f-adesao')||'';
+  const meiIFTM=meiValFTM?ei('MEI',meiValFTM):-1;
+  const adesaoIFTM=adesaoValFTM?ei('TP_ADESAO',adesaoValFTM):-1;
+  const titIFTM=c.titular?ei('TITULAR',c.titular):-1;
+  const vigIFTM=c.vig?ei('VIGÊNCIA',c.vig):-1;
+  const linhaIFTM=c.linha?ei('LINHA',c.linha):-1;
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const s=new Set();
@@ -861,84 +788,77 @@ function renderM2(){
   const tbody=document.getElementById('m2-tbody');
   thead.innerHTML=''; tbody.innerHTML='';
 
-  // Column widths (px) — anchor has no diff col
-  const W={num:20,plan:140,planAnc:155,acom:42,tm:72,diff:40};
+  /* ── Header row 1: operator groups ── */
+  const hr1=mk('tr');
+  /* leading # cell spans 2 header rows */
+  const thNum=mk('th','r1-th');
+  thNum.rowSpan=2; thNum.style.cssText='width:28px;min-width:28px;border-right:2px solid var(--border2);text-align:center;font-size:10px;color:var(--text2)';
+  thNum.textContent='#'; hr1.appendChild(thNum);
 
-  // ── colgroup for pixel-perfect alignment ──
-  const tbl=document.getElementById('tbl-m2');
-  let cg=tbl.querySelector('colgroup');
-  if(cg) cg.remove();
-  cg=document.createElement('colgroup');
-  // num col
-  const cNum=document.createElement('col'); cNum.style.width=W.num+'px'; cg.appendChild(cNum);
   ops.forEach(op=>{
     const isAnc=op===anchor;
-    const pw=isAnc?W.planAnc:W.plan;
-    [pw, W.acom, W.tm, ...(isAnc?[]:[W.diff])].forEach(w=>{
-      const c=document.createElement('col'); c.style.width=w+'px'; cg.appendChild(c);
-    });
-  });
-  tbl.insertBefore(cg, tbl.firstChild);
-
-  // ── Header row 1: operator names ──
-  const hr1=mk('tr','hdr-r1');
-  const thNum=mk('th','th-num'); thNum.rowSpan=2; thNum.textContent='#'; hr1.appendChild(thNum);
-  ops.forEach(op=>{
-    const isAnc=op===anchor;
-    const th=mk('th',isAnc?'anc-grp':'');
-    th.colSpan=isAnc?3:4;
     const disc=cfg[op].m2.disc;
+    /* anchor: 2 cols (plan+ticket); others: 3 cols (plan+ticket+diff) */
+    const th=mk('th','r1-th'+(isAnc?' anc-grp':''));
+    th.colSpan=isAnc?2:3;
     th.innerHTML='<span style="color:'+oc(op)+';font-weight:800">'+op+(isAnc?' ⚓':'')+'</span>'+
       (disc?'&thinsp;<span style="font-size:9px;font-weight:400;color:var(--text2)">'+(disc>0?'+':'')+disc+'%</span>':'');
     hr1.appendChild(th);
   });
   thead.appendChild(hr1);
 
-  // ── Header row 2: sub-column labels ──
-  const hr2=mk('tr','hdr-r2');
+  /* ── Header row 2: sub-columns ── */
+  const hr2=mk('tr');
   ops.forEach(op=>{
     const isAnc=op===anchor;
-    const s=isAnc?'sub-anc':'';
-    const thPl=mk('th','sub-plan '+s); thPl.textContent='Plano'; hr2.appendChild(thPl);
-    const thAc=mk('th',s); thAc.textContent='Ac.'; hr2.appendChild(thAc);
-    const thTm=mk('th',s); thTm.textContent='Ticket'; hr2.appendChild(thTm);
-    if(!isAnc){ const thDf=mk('th'); thDf.textContent='%'; hr2.appendChild(thDf); }
+    const s=isAnc?'r2-anc':'';
+
+    const thPl=mk('th','r2-th r2-plan '+s);
+    thPl.style.minWidth='155px';
+    thPl.textContent=op+' | Planos';
+    hr2.appendChild(thPl);
+
+    const thTm=mk('th','r2-th '+s); thTm.textContent='Ticket médio'; hr2.appendChild(thTm);
+    if(!isAnc){ const thDf=mk('th','r2-th'); thDf.textContent='%'; hr2.appendChild(thDf); }
   });
   thead.appendChild(hr2);
 
-  // ── Body rows ──
+  /* ── Body rows ── */
   equivRows.forEach((row,idx)=>{
     const tr=mk('tr','eq-row'); tr.draggable=true; tr.dataset.idx=idx;
     setupDrag(tr,idx);
 
-    // Drag/num cell
+    /* row number */
     const tdN=mk('td','c-num');
-    tdN.innerHTML='<div style="font-size:11px">⠿</div><div style="font-size:9px">'+(idx+1)+'</div>';
+    tdN.innerHTML='<div style="font-size:13px;line-height:1">⠿</div><div>'+(idx+1)+'</div>';
     tdN.title='Arraste para reordenar'; tr.appendChild(tdN);
 
-    // Anchor TM
+    /* anchor TM for diff */
     const ancSpec=row[anchor];
     const ancTM=ancSpec?fetchTM(anchor,ancSpec.plan,ancSpec.acom,'m2'):null;
 
-    // All TMs for cheapest highlight
+    /* collect all TMs after auto-assign (compute lazily per op) */
     const rowTMCache={};
-    function getRowTM(op){
-      if(!(op in rowTMCache)){
-        const s=equivRows[idx][op];
-        rowTMCache[op]=s?fetchTM(op,s.plan,s.acom,'m2'):null;
-      }
-      return rowTMCache[op];
-    }
+    function getRowTM(op){ if(!(op in rowTMCache)){const s=equivRows[idx][op];rowTMCache[op]=s?fetchTM(op,s.plan,s.acom,'m2'):null;}return rowTMCache[op];}
+    // Pre-compute to find min (will auto-assign during ops loop, so compute after)
+    let minTM=null;
 
-    ops.forEach(op=>{
+    ops.forEach((op,oi)=>{
       const isAnc=op===anchor;
       const spec=row[op];
-      const spec2=equivRows[idx][op];
       const avail=availPlansForOp(op);
 
-      // ── Plan cell ──
+      /* ── Plan + Acom selector cell ── */
       const tdPl=mk('td','c-plan');
       const wrap=mk('div','ps-wrap');
+
+      // Auto-populate: if no spec but plans available, assign first plan
+      if(!spec&&avail.length>0){
+        const defAcom=(OP_ACOM_AVAIL[op]||['QUARTO'])[0];
+        equivRows[idx][op]={plan:avail[0],acom:defAcom};
+        // re-read spec after auto-assign
+      }
+      const spec2=equivRows[idx][op]; // use updated spec
 
       const selPl=mk('select','sel-plan');
       const emp=mk('option'); emp.value=''; emp.textContent='— sem equiv. —'; selPl.appendChild(emp);
@@ -969,32 +889,31 @@ function renderM2(){
       }
       tdPl.appendChild(wrap); tr.appendChild(tdPl);
 
-      // ── Ticket cell ──
+      /* ── Ticket cell ── */
       const tdTm=mk('td','c-tm');
-      const tm=getRowTM(op);
-      if(spec2&&tm){
-        // find min for cheapest
-        const allTMs=ops.map(o=>getRowTM(o)).filter(v=>v);
-        const minTM=allTMs.length?Math.min(...allTMs):null;
-        const cheap=minTM&&Math.abs(tm-minTM)<0.01;
-        tdTm.innerHTML='<span style="color:'+(cheap?'var(--green)':oc(op))+'">R$&nbsp;'+fmt(tm)+'</span>';
-      } else if(spec2){
-        tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">sem dados</span>';
-      } else {
-        tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
-      }
+      if(spec2){
+        const tm=getRowTM(op);
+        if(tm){
+          const cheap=minTM!==null&&Math.abs(tm-minTM)<0.01;
+          tdTm.innerHTML='<span style="color:'+(cheap?'var(--green)':oc(op))+'">R$&nbsp;'+fmt(tm)+'</span>';
+        } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">sem dados</span>';
+      } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
       tr.appendChild(tdTm);
 
-      // ── Diff cell ──
+      /* ── Diff cell (non-anchor) ── */
       if(!isAnc){
         const tdDf=mk('td','c-diff');
+        const tm=getRowTM(op);
         if(spec2&&ancTM&&tm){
           const p=((tm-ancTM)/ancTM*100);
           tdDf.innerHTML='<span class="diff '+(p>0?'d-above':'d-below')+'">'+(p>0?'+':'')+p.toFixed(1)+'%</span>';
-        } else tdDf.innerHTML='<span style="color:var(--text3)">—</span>';
+        } else tdDf.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
         tr.appendChild(tdDf);
       }
     });
+    // Compute minTM after all auto-assigns for this row
+    const allTMs=ops.map(op=>getRowTM(op)).filter(v=>v!==null&&v>0);
+    minTM=allTMs.length?Math.min(...allTMs):null;
     tbody.appendChild(tr);
   });
 
@@ -1002,14 +921,9 @@ function renderM2(){
 }
 
 function renderM2Cards(ops,anchor){
-  const cEl=document.getElementById('cards-m2'); cEl.innerHTML='';
-  // Match card widths to colgroup: num(20) + per-op cols
-  const W={num:20,plan:140,planAnc:155,acom:42,tm:72,diff:40};
-  // cards container must have same left offset as table body
-  cEl.style.paddingLeft=W.num+'px';
-  cEl.style.gap='0';
-
-  ops.forEach((op,oi)=>{
+  // Sum of all TMs per op across all equiv rows
+  const cEl=document.getElementById('cards-m2');cEl.innerHTML='';
+  ops.forEach(op=>{
     let total=0,cnt=0;
     equivRows.forEach(row=>{
       const spec=row[op];
@@ -1017,9 +931,6 @@ function renderM2Cards(ops,anchor){
     });
     const avg=cnt?total/cnt:null;
     const isAnc=op===anchor;
-    // width = plan + acom + tm + (diff if not anchor)
-    const colW=(isAnc?W.planAnc:W.plan)+W.acom+W.tm+(isAnc?0:W.diff);
-
     let ancAvg=null;
     if(!isAnc){
       let at=0,ac=0;
@@ -1027,17 +938,11 @@ function renderM2Cards(ops,anchor){
       ancAvg=ac?at/ac:null;
     }
     const pct=ancAvg&&avg&&!isAnc?((avg-ancAvg)/ancAvg*100):null;
-    const card=mk('div','card');
-    card.style.cssText=`border-top:3px solid ${oc(op)};flex:none;width:${colW}px;min-width:${colW}px;
-      border-left:2px solid var(--border2);border-radius:0;box-shadow:none;
-      border-right:none;border-bottom:none;border-top-color:${oc(op)};
-      padding:6px 8px;background:#fff`;
-    if(oi===0) card.style.borderLeft='none';
-    card.innerHTML=
-      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
-      '<div style="font-size:16px;font-weight:800;color:'+oc(op)+';line-height:1.1">'+(avg?'R$&nbsp;'+fmt(avg):'—')+'</div>'+
-      (pct!==null?'<div style="font-size:10px;font-weight:700;color:'+(pct>0?'var(--red)':'var(--green)')+'">'+( pct>0?'+':'')+pct.toFixed(1)+'% vs ⚓</div>':'')+
-      '<div style="font-size:9px;color:var(--text2)">'+cnt+' planos</div>';
+    const card=mk('div','card');card.style.borderTopColor=oc(op);
+    card.innerHTML='<div class="card-lbl" style="color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
+      '<div class="card-val" style="color:'+oc(op)+'">'+(avg?'R$&nbsp;'+fmt(avg):'—')+'</div>'+
+      (pct!==null?'<div class="card-diff" style="color:'+(pct>0?'var(--red)':'var(--green)')+'">'+(pct>0?'+':'')+pct.toFixed(1)+'% vs âncora</div>':'')+
+      '<div class="card-sub">'+(cnt)+' planos · ticket médio</div>';
     cEl.appendChild(card);
   });
 }
@@ -1144,17 +1049,13 @@ function switchTab(mod){
   if(mod==='m1')renderM1();else if(mod==='m2')renderM2();else if(mod==='m3')renderM3();
 }
 
-// Expose functions needed by HTML onclick handlers to global scope
-  window.switchTab    = switchTab;
-  window.addEquivRow  = addEquivRow;
-  window.applyDist    = applyDist;
-  window.resetDist    = resetDist;
-  window.updateDistSum= updateDistSum;
-
-  init(); // call directly — DOMContentLoaded already fired
+window.switchTab=switchTab;window.addEquivRow=addEquivRow;
+  window.applyDist=applyDist;window.resetDist=resetDist;
+  window.updateDistSum=updateDistSum;
+  init(); // call directly
 
 }
 
-// Start loading when DOM is ready
 window.addEventListener('DOMContentLoaded', loadData);
->>
+</script>
+</html>
