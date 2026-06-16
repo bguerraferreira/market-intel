@@ -366,7 +366,12 @@ function initApp() {
 
 function oc(op){return OP_COLOR[op]||'#5a6484';}
 
-// Col indices — declared BEFORE OP_FV to avoid ReferenceError
+// Col indices — AGE_C comes from RAW which is set before initApp runs
+const AGE_C = RAW.age_cols;
+const ENUMS = RAW.enums;
+let AGE_D = RAW.age;
+const FAIXAS = ENUMS.FAIXA_ETARIA || ['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
+const DIST = RAW.dist_etaria || {};
 const Ai={
   dt:AGE_C.indexOf('DT_EXPORTACAO'),uf:AGE_C.indexOf('UF'),
   fil:AGE_C.indexOf('FILIAL'),op:AGE_C.indexOf('OPERADORA'),
