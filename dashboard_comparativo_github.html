@@ -72,7 +72,7 @@ select[multiple] option:checked{background:var(--hap-lt2);color:var(--hap)}
 .op-col-fields select,.op-col-fields input{width:100%;min-width:unset;font-size:11px}
 
 /* CARDS */
-.cards{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.cards{display:flex;gap:0;margin-bottom:0;flex-wrap:nowrap;border:1px solid var(--border);border-radius:10px 10px 0 0;overflow:hidden;box-shadow:var(--shadow)}
 .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:7px 10px;flex:1;min-width:100px;box-shadow:var(--shadow);border-top:3px solid transparent}
 .card-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px}
 .card-val{font-size:16px;font-weight:800;line-height:1.1}
@@ -100,58 +100,76 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 .d-same{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 
 /* ──── MODULE 2 EQUIVALENCY TABLE ──── */
-.m2-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:auto;box-shadow:var(--shadow);max-height:72vh}
+.m2-wrap{background:#fff;border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;overflow:auto;box-shadow:none;max-height:68vh}
+
+/* table-layout:fixed + colgroup enforce exact pixel widths */
 .eq-table{border-collapse:collapse;width:100%;font-size:11px;table-layout:fixed}
 .eq-table thead{position:sticky;top:0;z-index:3}
 
-/* i+v) row 1: operator header — na mesma linha, sem quebra */
-.eq-table .r1-th{background:#fff;padding:4px 6px;font-size:11px;font-weight:700;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap;border-right:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;height:28px;line-height:20px}
-.eq-table .r1-th:last-child{border-right:none}
-.eq-table .r1-th.anc-grp{background:var(--hap-lt)}
+/* Header row 1 — operator name, single line, aligned to column group */
+.eq-table thead tr.hdr-r1 th{
+  background:#fff;padding:4px 0;font-size:11px;font-weight:700;
+  text-align:center;border-bottom:1px solid var(--border);
+  border-right:2px solid var(--border2);overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;height:26px;line-height:18px}
+.eq-table thead tr.hdr-r1 th:last-child{border-right:none}
+.eq-table thead tr.hdr-r1 th.anc-grp{background:var(--hap-lt)}
+.eq-table thead tr.hdr-r1 th.th-num{
+  border-right:2px solid var(--border2);background:var(--bg3);font-size:9px;color:var(--text2)}
 
-/* row 2: sub-column headers */
-.eq-table .r2-th{background:var(--bg3);padding:3px 4px;font-size:9px;font-weight:700;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;text-align:right;height:22px;line-height:16px}
-.eq-table .r2-th.r2-plan{text-align:left;border-left:2px solid var(--border2)}
-.eq-table .r2-th.r2-anc{background:var(--hap-lt)}
+/* Header row 2 — sub-columns, exactly under each col */
+.eq-table thead tr.hdr-r2 th{
+  background:var(--bg3);padding:3px 4px;font-size:9px;font-weight:700;
+  color:var(--text2);border-bottom:2px solid var(--border);
+  white-space:nowrap;text-align:right;height:20px;line-height:14px}
+.eq-table thead tr.hdr-r2 th.sub-plan{text-align:left;border-left:2px solid var(--border2)}
+.eq-table thead tr.hdr-r2 th.sub-anc{background:var(--hap-lt)}
+.eq-table thead tr.hdr-r2 th.sub-num{border-right:2px solid var(--border2);text-align:center}
 
-/* body rows */
+/* Body */
 .eq-table tbody tr.eq-row:hover td{background:var(--bg3)}
 .eq-table tbody tr.eq-row:nth-child(even) td{background:var(--bg)}
 .eq-table tbody tr.eq-row.dragging td{opacity:.35}
-.eq-table tbody tr.eq-row.drag-over td.c-plan:first-of-type{border-top:2px solid var(--hap)}
 .eq-table tbody td{padding:4px 4px;border-bottom:1px solid var(--border);vertical-align:middle}
 
-/* row-number / drag col */
-.eq-table td.c-num{width:20px;min-width:20px;max-width:20px;text-align:center;color:var(--text3);font-size:9px;border-right:2px solid var(--border2);cursor:grab;user-select:none;padding:3px}
+/* Drag/num cell */
+.eq-table td.c-num{
+  text-align:center;color:var(--text3);font-size:9px;
+  border-right:2px solid var(--border2);cursor:grab;user-select:none}
 .eq-table td.c-num:hover{color:var(--hap);background:var(--hap-lt)!important}
 
-/* i+ii) plan cell — mais larga para mostrar nome completo
-   Hapvida (âncora) tem coluna um pouco maior */
-.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);width:185px;min-width:160px;overflow:hidden}
-.eq-table td.c-plan.c-plan-anc{width:200px;min-width:175px}
-.c-plan .ps-wrap{display:flex;gap:2px;align-items:center}
-
-/* i) fonte do plano menor para caber nome completo, mas select mais largo */
-.c-plan select.sel-plan{flex:1;font-size:9px;height:20px;border:1px solid var(--border);border-radius:3px;background:var(--bg3);color:var(--text);padding:0 2px;min-width:0;text-overflow:ellipsis}
-
-/* iii) acom mantém tamanho legível */
-.c-plan select.sel-acom{width:42px;flex-shrink:0;font-size:9px;height:20px;border:1px solid var(--border);border-radius:3px;background:var(--bg3);color:var(--text2);padding:0 2px}
+/* Plan cell — full width of the plan column, no overflow */
+.eq-table td.c-plan{text-align:left;border-left:2px solid var(--border2);padding:3px 3px}
+.c-plan .ps-wrap{display:flex;gap:2px;align-items:center;width:100%}
+/* plan select fills remaining space after acom */
+.c-plan select.sel-plan{
+  flex:1;min-width:0;font-size:9px;height:20px;
+  border:1px solid var(--border);border-radius:3px;
+  background:var(--bg3);color:var(--text);padding:0 2px}
+.c-plan select.sel-acom{
+  width:42px;flex-shrink:0;font-size:9px;height:20px;
+  border:1px solid var(--border);border-radius:3px;
+  background:var(--bg3);color:var(--text2);padding:0 1px}
 .c-plan select:focus{outline:none;border-color:var(--hap);background:#fff}
 
-/* iv) ticket — sem espaço extra, coluna mais curta */
-.eq-table td.c-tm{text-align:right;white-space:nowrap;width:76px;min-width:70px;font-weight:700;font-size:11px;padding-left:2px;padding-right:4px}
+/* Ticket cell */
+.eq-table td.c-tm{
+  text-align:right;white-space:nowrap;font-weight:700;font-size:11px;
+  padding:4px 4px}
 
-/* iv) diff — coluna mais curta, badge menor */
-.eq-table td.c-diff{text-align:right;white-space:nowrap;width:42px;min-width:38px;padding-left:2px;padding-right:3px}
+/* Diff cell */
+.eq-table td.c-diff{text-align:right;white-space:nowrap;padding:4px 3px}
 
-/* diff badges */
+/* Diff badges */
 .diff{display:inline-block;font-size:8px;font-weight:700;padding:1px 3px;border-radius:3px}
 .d-above{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
 .d-below{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
 
-/* footer */
-.eq-footer{display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
-.eq-footer button{padding:3px 10px;border-radius:5px;border:1px dashed var(--border2);background:transparent;cursor:pointer;color:var(--text2);font-size:10px;font-weight:600;transition:all .15s}
+/* Footer */
+.eq-footer{display:flex;align-items:center;gap:8px;padding:6px 12px;
+  border-top:1px solid var(--border);background:var(--bg3);border-radius:0 0 10px 10px}
+.eq-footer button{padding:3px 10px;border-radius:5px;border:1px dashed var(--border2);
+  background:transparent;cursor:pointer;color:var(--text2);font-size:10px;font-weight:600}
 .eq-footer button:hover{border-color:var(--hap);color:var(--hap);background:var(--hap-lt)}
 
 /* LOADING */
@@ -215,10 +233,12 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     </div>
   </div>
   <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m2"></div></div>
-  <div class="cards" id="cards-m2"></div>
+  <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:0">
+  <div class="cards" id="cards-m2" style="border-bottom:2px solid var(--border2)"></div>
   <div class="m2-wrap" id="m2-wrap">
     <table class="eq-table" id="tbl-m2"><thead id="m2-thead"></thead><tbody id="m2-tbody"></tbody></table>
-    <div class="add-equiv-row"><button onclick="addEquivRow()">＋ Adicionar linha de equivalência</button><span style="font-size:10px;color:var(--text2)">Arraste as linhas para reordenar</span></div>
+    <div class="eq-footer"><button onclick="addEquivRow()">＋ Adicionar linha de equivalência</button><span style="font-size:10px;color:var(--text2)">Arraste as linhas para reordenar</span></div>
+  </div>
   </div>
 </div>
 
@@ -443,7 +463,7 @@ const OP_ACOM_AVAIL={
 
 const state={
   m1:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
-  m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA','PORTO'],anchor:'HAPVIDA'},
+  m2:{ops:['HAPVIDA','AMIL','BRADESCO','SULAMERICA'],anchor:'HAPVIDA'},
 };
 const cfg={};
 // Default plans for Module 1
@@ -731,72 +751,84 @@ function renderM2(){
   const tbody=document.getElementById('m2-tbody');
   thead.innerHTML=''; tbody.innerHTML='';
 
-  /* ── Header row 1: operator groups ── */
-  const hr1=mk('tr');
-  /* leading # cell spans 2 header rows */
-  const thNum=mk('th','r1-th');
-  thNum.rowSpan=2; thNum.style.cssText='width:28px;min-width:28px;border-right:2px solid var(--border2);text-align:center;font-size:10px;color:var(--text2)';
-  thNum.textContent='#'; hr1.appendChild(thNum);
+  // Column widths (px) — anchor has no diff col
+  const W={num:20,plan:140,planAnc:155,acom:42,tm:72,diff:40};
 
+  // ── colgroup for pixel-perfect alignment ──
+  const tbl=document.getElementById('tbl-m2');
+  let cg=tbl.querySelector('colgroup');
+  if(cg) cg.remove();
+  cg=document.createElement('colgroup');
+  // num col
+  const cNum=document.createElement('col'); cNum.style.width=W.num+'px'; cg.appendChild(cNum);
   ops.forEach(op=>{
     const isAnc=op===anchor;
+    const pw=isAnc?W.planAnc:W.plan;
+    [pw, W.acom, W.tm, ...(isAnc?[]:[W.diff])].forEach(w=>{
+      const c=document.createElement('col'); c.style.width=w+'px'; cg.appendChild(c);
+    });
+  });
+  tbl.insertBefore(cg, tbl.firstChild);
+
+  // ── Header row 1: operator names ──
+  const hr1=mk('tr','hdr-r1');
+  const thNum=mk('th','th-num'); thNum.rowSpan=2; thNum.textContent='#'; hr1.appendChild(thNum);
+  ops.forEach(op=>{
+    const isAnc=op===anchor;
+    const th=mk('th',isAnc?'anc-grp':'');
+    th.colSpan=isAnc?3:4;
     const disc=cfg[op].m2.disc;
-    /* anchor: 2 cols (plan+ticket); others: 3 cols (plan+ticket+diff) */
-    const th=mk('th','r1-th'+(isAnc?' anc-grp':''));
-    th.colSpan=isAnc?2:3;
     th.innerHTML='<span style="color:'+oc(op)+';font-weight:800">'+op+(isAnc?' ⚓':'')+'</span>'+
       (disc?'&thinsp;<span style="font-size:9px;font-weight:400;color:var(--text2)">'+(disc>0?'+':'')+disc+'%</span>':'');
     hr1.appendChild(th);
   });
   thead.appendChild(hr1);
 
-  /* ── Header row 2: sub-columns ── */
-  const hr2=mk('tr');
+  // ── Header row 2: sub-column labels ──
+  const hr2=mk('tr','hdr-r2');
   ops.forEach(op=>{
     const isAnc=op===anchor;
-    const s=isAnc?'r2-anc':'';
-
-    const thPl=mk('th','r2-th r2-plan '+s);
-    thPl.style.minWidth='155px';
-    thPl.textContent=op+' | Planos';
-    hr2.appendChild(thPl);
-
-    const thTm=mk('th','r2-th '+s); thTm.textContent='Ticket médio'; hr2.appendChild(thTm);
-    if(!isAnc){ const thDf=mk('th','r2-th'); thDf.textContent='%'; hr2.appendChild(thDf); }
+    const s=isAnc?'sub-anc':'';
+    const thPl=mk('th','sub-plan '+s); thPl.textContent='Plano'; hr2.appendChild(thPl);
+    const thAc=mk('th',s); thAc.textContent='Ac.'; hr2.appendChild(thAc);
+    const thTm=mk('th',s); thTm.textContent='Ticket'; hr2.appendChild(thTm);
+    if(!isAnc){ const thDf=mk('th'); thDf.textContent='%'; hr2.appendChild(thDf); }
   });
   thead.appendChild(hr2);
 
-  /* ── Body rows ── */
+  // ── Body rows ──
   equivRows.forEach((row,idx)=>{
     const tr=mk('tr','eq-row'); tr.draggable=true; tr.dataset.idx=idx;
     setupDrag(tr,idx);
 
-    /* row number */
+    // Drag/num cell
     const tdN=mk('td','c-num');
-    tdN.innerHTML='<div style="font-size:13px;line-height:1">⠿</div><div>'+(idx+1)+'</div>';
+    tdN.innerHTML='<div style="font-size:11px">⠿</div><div style="font-size:9px">'+(idx+1)+'</div>';
     tdN.title='Arraste para reordenar'; tr.appendChild(tdN);
 
-    /* anchor TM for diff */
+    // Anchor TM
     const ancSpec=row[anchor];
     const ancTM=ancSpec?fetchTM(anchor,ancSpec.plan,ancSpec.acom,'m2'):null;
 
-    /* collect all TMs after auto-assign (compute lazily per op) */
+    // All TMs for cheapest highlight
     const rowTMCache={};
-    function getRowTM(op){ if(!(op in rowTMCache)){const s=equivRows[idx][op];rowTMCache[op]=s?fetchTM(op,s.plan,s.acom,'m2'):null;}return rowTMCache[op];}
-    // Pre-compute to find min (will auto-assign during ops loop, so compute after)
-    let minTM=null;
+    function getRowTM(op){
+      if(!(op in rowTMCache)){
+        const s=equivRows[idx][op];
+        rowTMCache[op]=s?fetchTM(op,s.plan,s.acom,'m2'):null;
+      }
+      return rowTMCache[op];
+    }
 
-    ops.forEach((op,oi)=>{
+    ops.forEach(op=>{
       const isAnc=op===anchor;
       const spec=row[op];
+      const spec2=equivRows[idx][op];
       const avail=availPlansForOp(op);
 
-      /* ── Plan + Acom selector cell ── */
-      const tdPl=mk('td','c-plan'+(isAnc?' c-plan-anc':''));
+      // ── Plan cell ──
+      const tdPl=mk('td','c-plan');
       const wrap=mk('div','ps-wrap');
-
-      // Respect null exactly — null means "sem equivalente", never auto-assign
-      const spec2=equivRows[idx][op];
 
       const selPl=mk('select','sel-plan');
       const emp=mk('option'); emp.value=''; emp.textContent='— sem equiv. —'; selPl.appendChild(emp);
@@ -827,31 +859,32 @@ function renderM2(){
       }
       tdPl.appendChild(wrap); tr.appendChild(tdPl);
 
-      /* ── Ticket cell ── */
+      // ── Ticket cell ──
       const tdTm=mk('td','c-tm');
-      if(spec2){
-        const tm=getRowTM(op);
-        if(tm){
-          const cheap=minTM!==null&&Math.abs(tm-minTM)<0.01;
-          tdTm.innerHTML='<span style="color:'+(cheap?'var(--green)':oc(op))+'">R$&nbsp;'+fmt(tm)+'</span>';
-        } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">sem dados</span>';
-      } else tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
+      const tm=getRowTM(op);
+      if(spec2&&tm){
+        // find min for cheapest
+        const allTMs=ops.map(o=>getRowTM(o)).filter(v=>v);
+        const minTM=allTMs.length?Math.min(...allTMs):null;
+        const cheap=minTM&&Math.abs(tm-minTM)<0.01;
+        tdTm.innerHTML='<span style="color:'+(cheap?'var(--green)':oc(op))+'">R$&nbsp;'+fmt(tm)+'</span>';
+      } else if(spec2){
+        tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">sem dados</span>';
+      } else {
+        tdTm.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
+      }
       tr.appendChild(tdTm);
 
-      /* ── Diff cell (non-anchor) ── */
+      // ── Diff cell ──
       if(!isAnc){
         const tdDf=mk('td','c-diff');
-        const tm=getRowTM(op);
         if(spec2&&ancTM&&tm){
           const p=((tm-ancTM)/ancTM*100);
           tdDf.innerHTML='<span class="diff '+(p>0?'d-above':'d-below')+'">'+(p>0?'+':'')+p.toFixed(1)+'%</span>';
-        } else tdDf.innerHTML='<span style="color:var(--text3);font-size:10px">—</span>';
+        } else tdDf.innerHTML='<span style="color:var(--text3)">—</span>';
         tr.appendChild(tdDf);
       }
     });
-    // Compute minTM after all auto-assigns for this row
-    const allTMs=ops.map(op=>getRowTM(op)).filter(v=>v!==null&&v>0);
-    minTM=allTMs.length?Math.min(...allTMs):null;
     tbody.appendChild(tr);
   });
 
@@ -859,9 +892,14 @@ function renderM2(){
 }
 
 function renderM2Cards(ops,anchor){
-  // Sum of all TMs per op across all equiv rows
-  const cEl=document.getElementById('cards-m2');cEl.innerHTML='';
-  ops.forEach(op=>{
+  const cEl=document.getElementById('cards-m2'); cEl.innerHTML='';
+  // Match card widths to colgroup: num(20) + per-op cols
+  const W={num:20,plan:140,planAnc:155,acom:42,tm:72,diff:40};
+  // cards container must have same left offset as table body
+  cEl.style.paddingLeft=W.num+'px';
+  cEl.style.gap='0';
+
+  ops.forEach((op,oi)=>{
     let total=0,cnt=0;
     equivRows.forEach(row=>{
       const spec=row[op];
@@ -869,6 +907,9 @@ function renderM2Cards(ops,anchor){
     });
     const avg=cnt?total/cnt:null;
     const isAnc=op===anchor;
+    // width = plan + acom + tm + (diff if not anchor)
+    const colW=(isAnc?W.planAnc:W.plan)+W.acom+W.tm+(isAnc?0:W.diff);
+
     let ancAvg=null;
     if(!isAnc){
       let at=0,ac=0;
@@ -876,11 +917,17 @@ function renderM2Cards(ops,anchor){
       ancAvg=ac?at/ac:null;
     }
     const pct=ancAvg&&avg&&!isAnc?((avg-ancAvg)/ancAvg*100):null;
-    const card=mk('div','card');card.style.borderTopColor=oc(op);
-    card.innerHTML='<div class="card-lbl" style="color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
-      '<div class="card-val" style="color:'+oc(op)+'">'+(avg?'R$&nbsp;'+fmt(avg):'—')+'</div>'+
-      (pct!==null?'<div class="card-diff" style="color:'+(pct>0?'var(--red)':'var(--green)')+'">'+(pct>0?'+':'')+pct.toFixed(1)+'% vs âncora</div>':'')+
-      '<div class="card-sub">'+(cnt)+' planos · ticket médio</div>';
+    const card=mk('div','card');
+    card.style.cssText=`border-top:3px solid ${oc(op)};flex:none;width:${colW}px;min-width:${colW}px;
+      border-left:2px solid var(--border2);border-radius:0;box-shadow:none;
+      border-right:none;border-bottom:none;border-top-color:${oc(op)};
+      padding:6px 8px;background:#fff`;
+    if(oi===0) card.style.borderLeft='none';
+    card.innerHTML=
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:'+oc(op)+'">'+op+(isAnc?' ⚓':'')+'</div>'+
+      '<div style="font-size:16px;font-weight:800;color:'+oc(op)+';line-height:1.1">'+(avg?'R$&nbsp;'+fmt(avg):'—')+'</div>'+
+      (pct!==null?'<div style="font-size:10px;font-weight:700;color:'+(pct>0?'var(--red)':'var(--green)')+'">'+( pct>0?'+':'')+pct.toFixed(1)+'% vs ⚓</div>':'')+
+      '<div style="font-size:9px;color:var(--text2)">'+cnt+' planos</div>';
     cEl.appendChild(card);
   });
 }
@@ -1000,4 +1047,4 @@ function switchTab(mod){
 
 // Start loading when DOM is ready
 window.addEventListener('DOMContentLoaded', loadData);
-</script>
+>>
