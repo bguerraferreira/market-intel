@@ -183,7 +183,11 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 </style>
 </head>
 <body>
-<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt" id="loading-text">Conectando ao repositório...</div></div>
+<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt" id="loading-text">Conectando ao repositório...</div>
+  <div style="width:220px;height:4px;background:#e8eaf0;border-radius:2px;margin-top:10px;overflow:hidden">
+    <div id="loading-bar" style="width:0%;height:100%;background:var(--hap);border-radius:2px;transition:width 0.3s ease"></div>
+  </div>
+</div>
 
 <header>
   <div class="logo">H</div>
@@ -211,8 +215,13 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
       </select>
     </div>
     <div class="fg"><label>Coparticipação</label>
-      <select id="f1-copart" onchange="renderM1()">
-        <option value="SIM" selected>Com Copart.</option><option value="NÃO">Sem Copart.</option><option value="">Todas</option>
+      <select id="f1-copart" multiple size="5" onchange="renderM1()" style="font-size:10px;height:auto">
+        <option value="COMPLETA" selected>Completa</option>
+        <option value="COMPLETA 20%">Completa 20%</option>
+        <option value="COMPLETA 30%" selected>Completa 30%</option>
+        <option value="COMPLETA 40%">Completa 40%</option>
+        <option value="PARCIAL">Parcial</option>
+        <option value="">Sem copart.</option>
       </select>
     </div>
     <div class="fg"><label>MEI</label>
@@ -304,53 +313,66 @@ const GITHUB_BASE = 'https://raw.githubusercontent.com/bguerraferreira/market-in
 async function loadData() {
   const loadEl = document.getElementById('loading');
   const loadTxt = document.getElementById('loading-text');
+  const loadBar = document.getElementById('loading-bar');
 
   function setMsg(msg) { 
     if(loadTxt) loadTxt.textContent = msg;
     console.log('[Dashboard]', msg);
   }
-  
-  // Timeout after 90s
+  function setProgress(pct) {
+    if(loadBar) loadBar.style.width = pct + '%';
+  }
+
+  // Fetch with progress tracking using ReadableStream
+  async function fetchWithProgress(url, label, onProgress) {
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`Erro ao carregar ${label}: ${res.status}`);
+    const total = parseInt(res.headers.get('content-length') || '0');
+    let loaded = 0;
+    const reader = res.body.getReader();
+    const chunks = [];
+    while(true) {
+      const {done, value} = await reader.read();
+      if(done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if(total > 0 && onProgress) onProgress(loaded/total);
+    }
+    const blob = new Blob(chunks);
+    return JSON.parse(await blob.text());
+  }
+
   const timeout = setTimeout(()=>{
     if(loadEl && loadEl.style.display !== 'none'){
       loadEl.innerHTML = `<div style="text-align:center;padding:40px;max-width:500px">
         <div style="font-size:28px;margin-bottom:12px">⏱️</div>
         <div style="font-size:14px;font-weight:700;color:#c82020;margin-bottom:8px">Tempo esgotado</div>
-        <div style="font-size:11px;color:#5a6484;margin-bottom:12px">Os arquivos JSON estão demorando muito para carregar do GitHub. Verifique sua conexão ou tente novamente.</div>
+        <div style="font-size:11px;color:#5a6484;margin-bottom:12px">Os dados estão demorando. Verifique sua conexão.</div>
         <button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">Tentar novamente</button>
       </div>`;
     }
-  }, 90000);
+  }, 120000);
 
   try {
-    setMsg('Conectando ao repositório...');
-
-    const [metaRes, age1Res, age2Res, equivRes] = await Promise.all([
-      fetch(GITHUB_BASE + 'data_meta.json'),
-      fetch(GITHUB_BASE + 'data_age_1.json'),
-      fetch(GITHUB_BASE + 'data_age_2.json'),
-      fetch(GITHUB_BASE + 'data_equiv.json'),
-    ]);
-
-    // Check for HTTP errors
-    for(const [res, name] of [[metaRes,'meta'],[age1Res,'age_1'],[age2Res,'age_2'],[equivRes,'equiv']]) {
-      if(!res.ok) throw new Error(`Erro ao carregar ${name}: ${res.status} ${res.statusText}. Verifique a URL do repositório.`);
-    }
+    setMsg('Conectando ao repositório...'); setProgress(2);
 
     setMsg('Carregando metadados...');
-    const meta = await metaRes.json();
+    const meta = await fetchWithProgress(GITHUB_BASE+'data_meta.json','meta');
+    setProgress(10);
 
-    setMsg('Carregando preços — parte 1/2 (pode levar 10-20s)...');
-    const age1Data = await age1Res.json();
+    setMsg('Carregando preços — parte 1/2...');
+    const age1Data = await fetchWithProgress(GITHUB_BASE+'data_age_1.json','age_1',
+      p=>setProgress(10+p*38));
+    setProgress(48);
 
-    setMsg('Carregando preços — parte 2/2 (quase lá)...');
-    const age2Data = await age2Res.json();
+    setMsg('Carregando preços — parte 2/2...');
+    const age2Data = await fetchWithProgress(GITHUB_BASE+'data_age_2.json','age_2',
+      p=>setProgress(48+p*38));
+    setProgress(90);
 
-    setMsg('Carregando tickets médios...');
-    const tmData = await tmRes.json();
-
-    setMsg('Carregando tabela de equivalências...');
-    const equivData = await equivRes.json();
+    setMsg('Finalizando...');
+    const equivData = await fetchWithProgress(GITHUB_BASE+'data_equiv.json','equiv');
+    setProgress(96);
 
     // Merge the two age parts
     const ageData = { age: [...age1Data.age, ...age2Data.age] };
@@ -656,8 +678,9 @@ function filterRows(op,mod){
   const adesaoVal=gv('f-adesao')||'';
   const meiI=meiVal?ei('MEI',meiVal):-1;
   const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
-  // Coparticipação: SIM=PARCIAL, NÃO=qualquer COMPLETA*
-  const cpVal=gv('f'+(mod==='m1'?1:2)+'-copart')||'';
+  // Coparticipação multi-select ABRANGENCIA
+  const cpSel=document.getElementById('f'+(mod==='m1'?1:2)+'-copart');
+  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value?ei('ABRANGENCIA',o.value):-2).filter(i=>i>=-1):(ENUMS.ABRANGENCIA?ENUMS.ABRANGENCIA.map((_,i)=>i):[]);
   // Per-op filters (titular, vigência, linha)
   const titI=c.titular?ei('TITULAR',c.titular):-1;
   const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
@@ -669,9 +692,8 @@ function filterRows(op,mod){
     if(fvI>=0&&r[Ai.fv]!==fvI) return false;
     if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
     if(plI>=0&&r[Ai.pl]!==plI) return false;
-    // Copart via ABRANGENCIA: PARCIAL=com copart, COMPLETA*=sem
-    if(cpVal==='SIM'&&r[Ai.abr]!==ei('ABRANGENCIA','PARCIAL')) return false;
-    if(cpVal==='NÃO'&&r[Ai.abr]===ei('ABRANGENCIA','PARCIAL')) return false;
+    // Copart via ABRANGENCIA multi-select
+    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr])) return false;
     if(meiI>=0&&r[Ai.mei]!==meiI) return false;
     if(adesaoI>=0&&r[Ai.adesao]!==adesaoI) return false;
     if(titI>=0&&r[Ai.titular]!==titI) return false;
@@ -782,7 +804,8 @@ function fetchTM(op, plan, acom, mod){
   const acI=ei('ACOMODACAO',acom);
   const filNum=mod==='m1'?1:2;
   const filI=ei('FILIAL',gv('f'+filNum+'-fil')||'');
-  const cpVal=gv('f'+filNum+'-copart')||'';
+  const cpSelFTM=document.getElementById('f'+filNum+'-copart');
+  const abrIdxsFTM=cpSelFTM?[...cpSelFTM.selectedOptions].map(o=>o.value?ei('ABRANGENCIA',o.value):-2).filter(i=>i>=-1):[];
   const meiVal=gv('f-mei')||'';
   const adesaoVal=gv('f-adesao')||'';
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
@@ -795,8 +818,7 @@ function fetchTM(op, plan, acom, mod){
   const rows=AGE_D.filter(r=>{
     if(r[Ai.op]!==opI||r[Ai.pl]!==plI||r[Ai.acom]!==acI) return false;
     if(filI>=0&&r[Ai.fil]!==filI) return false;
-    if(cpVal==='SIM'&&r[Ai.abr]!==ei('ABRANGENCIA','PARCIAL')) return false;
-    if(cpVal==='NÃO'&&r[Ai.abr]===ei('ABRANGENCIA','PARCIAL')) return false;
+    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr])) return false;
     if(fvI>=0&&r[Ai.fv]!==fvI) return false;
     if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
     if(meiI>=0&&r[Ai.mei]!==meiI) return false;
