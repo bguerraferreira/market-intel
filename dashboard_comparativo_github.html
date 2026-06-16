@@ -170,7 +170,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 
 <!-- M1 -->
 <div id="panel-m1" class="panel active">
-  <div id="m1-loading-msg" style="display:none;text-align:center;padding:30px;color:var(--text2)"><div style="font-size:24px;margin-bottom:8px">⏳</div>Carregando faixa etária...<br><span style="font-size:11px">Módulos 2, 3 e 4 já disponíveis</span></div>
+  <div id="m1-loading-msg" style="display:none;text-align:center;padding:30px;color:var(--text2)"><div style="font-size:22px;margin-bottom:6px">⏳</div>Carregando faixa etária...<br><span style="font-size:11px">Módulos 2, 3 e 4 já disponíveis</span></div>
   <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m1"></div></div>
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f1-fil" onchange="renderM1()"></select></div>
@@ -181,7 +181,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
       </select>
     </div>
     <div class="fg"><label>Coparticipação</label>
-      <select id="f1-copart" multiple size="5" onchange="renderM1()" style="font-size:10px;min-height:80px">
+      <select id="f1-copart" multiple size="5" onchange="renderM1()" style="font-size:10px;min-height:82px">
         <option value="COMPLETA" selected>Completa</option>
         <option value="COMPLETA 20%">Completa 20%</option>
         <option value="COMPLETA 30%" selected>Completa 30%</option>
@@ -190,25 +190,9 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
         <option value="">Sem copart.</option>
       </select>
     </div>
-    <div class="fg"><label>UF</label>
-      <select id="f-uf" onchange="renderM1();renderM2()">
-        <option value="">Todas</option>
-      </select>
-    </div>
-    <div class="fg"><label>MEI</label>
-      <select id="f-mei" onchange="renderM1();renderM2()">
-        <option value="">Todos</option>
-        <option value="NÃO MEI">Não MEI</option>
-        <option value="MEI">MEI</option>
-      </select>
-    </div>
-    <div class="fg"><label>Tipo de Adesão</label>
-      <select id="f-adesao" onchange="renderM1();renderM2()">
-        <option value="">Todos</option>
-        <option value="OPCIONAL">Opcional</option>
-        <option value="COMPULSÓRIA">Compulsória</option>
-      </select>
-    </div>
+    <div class="fg"><label>UF</label><select id="f-uf" onchange="renderM1();renderM2()"><option value="">Todas</option></select></div>
+    <div class="fg"><label>MEI</label><select id="f-mei" onchange="renderM1();renderM2()"><option value="">Todos</option><option value="NÃO MEI">Não MEI</option><option value="MEI">MEI</option></select></div>
+    <div class="fg"><label>Tipo de Adesão</label><select id="f-adesao" onchange="renderM1();renderM2()"><option value="">Todos</option><option value="OPCIONAL">Opcional</option><option value="COMPULSÓRIA">Compulsória</option></select></div>
   </div>
   <div class="opbar"><div class="opbar-hdr">🎯 Por operadora — Plano · Reembolso (multi) · Faixa de Vidas · Simulador %</div><div class="opbar-body" id="opbar-m1"></div></div>
   <div class="cards" id="cards-m1"></div>
@@ -221,7 +205,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f2-fil" onchange="renderM2()"></select></div>
     <div class="fg"><label>Coparticipação</label>
-      <select id="f2-copart" multiple size="5" onchange="renderM2()" style="font-size:10px;min-height:80px">
+      <select id="f2-copart" multiple size="5" onchange="renderM2()" style="font-size:10px;min-height:82px">
         <option value="COMPLETA" selected>Completa</option>
         <option value="COMPLETA 20%">Completa 20%</option>
         <option value="COMPLETA 30%" selected>Completa 30%</option>
@@ -272,82 +256,60 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
     </table>
     <div style="padding:10px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)">
       <button onclick="applyDist()" style="padding:6px 14px;border-radius:6px;border:none;cursor:pointer;background:var(--hap);color:#fff;font-size:12px;font-weight:600">Recalcular</button>
-      <button onclick="resetDist()" style="padding:6px 14
+      <button onclick="resetDist()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:transparent;color:var(--text2);font-size:12px;font-weight:600">Restaurar</button>
+      <span id="dist-sum" style="font-size:12px;margin-left:4px"></span>
+    </div>
+  </div>
+</div>
+
+<script>
 const GITHUB_BASE='https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
 let RAW,EQUIV_ROWS;
-
 async function loadData(){
-  const loadEl=document.getElementById('loading');
-  const loadTxt=document.getElementById('loading-text');
-  const loadBar=document.getElementById('loading-bar');
-  function setMsg(m){if(loadTxt)loadTxt.textContent=m;console.log('[Dashboard]',m);}
-  function setProgress(p){if(loadBar)loadBar.style.width=Math.min(100,p)+'%';}
-  async function fetchWithProgress(url,label,onProg){
+  const loadEl=document.getElementById('loading'),loadTxt=document.getElementById('loading-text'),loadBar=document.getElementById('loading-bar');
+  function setMsg(m){if(loadTxt)loadTxt.textContent=m;}
+  function setPct(p){if(loadBar)loadBar.style.width=Math.min(100,p)+'%';}
+  async function fetchJ(url,onP){
     const res=await fetch(url);
-    if(!res.ok)throw new Error('Erro '+label+': '+res.status+' — verifique o repositório.');
-    const total=parseInt(res.headers.get('content-length')||'0');
+    if(!res.ok)throw new Error('HTTP '+res.status+': '+url);
+    const tot=parseInt(res.headers.get('content-length')||'0');
     let loaded=0;const reader=res.body.getReader();const chunks=[];
-    while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.length;if(total>0&&onProg)onProg(loaded/total);}
+    while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.length;if(tot>0&&onP)onP(loaded/tot);}
     return JSON.parse(await new Blob(chunks).text());
   }
   try{
-    setMsg('Carregando dados principais...'); setProgress(5);
-    const[meta,equivData]=await Promise.all([
-      fetchWithProgress(GITHUB_BASE+'data_meta.json','meta',p=>setProgress(5+p*60)),
-      fetchWithProgress(GITHUB_BASE+'data_equiv.json','equiv'),
-    ]);
-    setProgress(68);
-    window.RAW={enums:meta.enums,age_cols:meta.age_cols,tm_cols:meta.tm_cols,
-      dist_etaria:meta.dist_etaria,age:[],tm:meta.tm};
-    window.EQUIV_ROWS_LOADED=equivData;
-    setMsg('Inicializando...'); setProgress(72);
-    try{initApp();}catch(e){console.error('initApp:',e);throw e;}
+    setMsg('Carregando dados...'); setPct(5);
+    const[meta,eq]=await Promise.all([fetchJ(GITHUB_BASE+'data_meta.json',p=>setPct(5+p*60)),fetchJ(GITHUB_BASE+'data_equiv.json')]);
+    setPct(68);
+    window.RAW={enums:meta.enums,age_cols:meta.age_cols,tm_cols:meta.tm_cols,dist_etaria:meta.dist_etaria,age:[],tm:meta.tm};
+    window.EQUIV_ROWS_LOADED=eq;
+    setMsg('Inicializando...'); setPct(72);
+    initApp();
     if(loadEl)loadEl.style.display='none';
     switchTab('m2');
     const m1btn=document.querySelector('[onclick=\"switchTab(\'m1\')\"]');
-    if(m1btn){m1btn.style.opacity='0.5';m1btn.title='Faixa etária: carregando...';}
+    if(m1btn){m1btn.style.opacity='0.5';m1btn.title='Faixa etária carregando...';}
     const m1msg=document.getElementById('m1-loading-msg');
     if(m1msg)m1msg.style.display='block';
-    const age1=await fetchWithProgress(GITHUB_BASE+'data_age_1.json','age_1',p=>setProgress(72+p*13));
-    setProgress(85);
-    const age2=await fetchWithProgress(GITHUB_BASE+'data_age_2.json','age_2',p=>setProgress(85+p*14));
-    setProgress(100);
-    window.RAW.age=[...age1.age,...age2.age];
-    window.AGE_D=window.RAW.age;
-    if(typeof AGE_D!=='undefined')AGE_D=window.AGE_D;
+    const[a1,a2]=await Promise.all([fetchJ(GITHUB_BASE+'data_age_1.json',p=>setPct(72+p*13)),fetchJ(GITHUB_BASE+'data_age_2.json',p=>setPct(85+p*14))]);
+    setPct(100);
+    window.RAW.age=[...a1.age,...a2.age];
+    AGE_D=window.RAW.age;
     if(m1btn){m1btn.style.opacity='1';m1btn.title='';}
     if(m1msg)m1msg.style.display='none';
-    console.log('[Dashboard] M1 pronto —',window.RAW.age.length,'linhas');
   }catch(err){
     console.error('[Dashboard]',err);
-    if(loadEl){
-      loadEl.style.display='flex';
-      loadEl.innerHTML='<div style="text-align:center;padding:40px;max-width:500px">'+
-        '<div style="font-size:28px">⚠️</div>'+
-        '<div style="font-size:14px;font-weight:700;color:#c82020;margin:8px 0">Erro ao carregar</div>'+
-        '<div style="font-size:12px;color:#5a6484;margin-bottom:14px">'+err.message+'</div>'+
-        '<button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Tentar novamente</button>'+
-        '</div>';
-    }
+    if(loadEl){loadEl.style.display='flex';loadEl.innerHTML='<div style="text-align:center;padding:40px;max-width:500px"><div style="font-size:28px">⚠️</div><div style="font-size:14px;font-weight:700;color:#c82020;margin:8px 0">Erro ao carregar</div><div style="font-size:12px;color:#5a6484;margin-bottom:14px">'+err.message+'</div><button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Tentar novamente</button></div>';}
   }
 }
-
 function initApp(){
-  RAW=window.RAW;
-  EQUIV_ROWS=window.EQUIV_ROWS_LOADED;
-const ENUMS=RAW.enums, AGE_C=RAW.age_cols, AGE_D=RAW.age;
-const FAIXAS=['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
-let DIST={...RAW.dist_etaria};
-const DIST0={...RAW.dist_etaria};
-const ALL_OPS=[...ENUMS['OPERADORA']];
-const OP_COLOR={
-  HAPVIDA:'#E84118',AMIL:'#2563eb',BRADESCO:'#c82020',
-  SULAMERICA:'#b45309',PORTO:'#6d28d9',
-  'CARE PLUS':'#0891b2','OMINT':'#0d9488',
-  SELECT:'#64748b','SEG. UNIMED':'#16a34a',
-  ALICE:'#db2777','SÃO BERNARDO':'#7c3aed',
-};
-
+  RAW=window.RAW; EQUIV_ROWS=window.EQUIV_ROWS_LOADED;
+  const ENUMS=RAW.enums,AGE_C=RAW.age_cols;
+  let AGE_D=RAW.age;
+  const FAIXAS=['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
+  let DIST={...RAW.dist_etaria};const DIST0={...RAW.dist_etaria};
+  const ALL_OPS=[...ENUMS['OPERADORA']];
+  const OP_COLOR={HAPVIDA:'#E84118',AMIL:'#2563eb',BRADESCO:'#c82020',SULAMERICA:'#b45309',PORTO:'#6d28d9','CARE PLUS':'#0891b2','OMINT':'#0d9488',SELECT:'#64748b','SEG. UNIMED':'#16a34a',ALICE:'#db2777','SÃO BERNARDO':'#7c3aed'};
 
 function oc(op){return OP_COLOR[op]||'#5a6484';}
 
@@ -361,7 +323,7 @@ const Ai={
   linha:AGE_C.indexOf('LINHA'),remb:AGE_C.indexOf('REEMBOLSO'),
   titular:AGE_C.indexOf('TITULAR'),vig:AGE_C.indexOf('VIGÊNCIA'),
   fe:AGE_C.indexOf('FAIXA_ETARIA'),pr:AGE_C.indexOf('PRECO'),cp:-1,
-}
+};
 
 // Precompute available faixas de vidas per operator
 const OP_FV={};
@@ -372,15 +334,11 @@ ALL_OPS.forEach(op=>{
   OP_FV[op]=[...s].sort();
 });
 
+const OP_PLAN_DEFAULT_M1={HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',SULAMERICA:'DIRETO NACIONAL',PORTO:'P220'};
 const OP_FV_DEFAULT={
   HAPVIDA:'2 A 29',AMIL:'5 A 29',BRADESCO:'3 A 29',SULAMERICA:'5 A 29',PORTO:'3 A 29',
   'CARE PLUS':'2 A 29',OMINT:'4 A 29','SEG. UNIMED':'','SELECT':'',ALICE:'','SÃO BERNARDO':''
 };
-const OP_PLAN_DEFAULT_M1={
-  HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',
-  SULAMERICA:'DIRETO NACIONAL',PORTO:'P220',
-};
-
 // Per-operator reembolso defaults (based on what each operator actually offers)
 const OP_REMB_DEFAULT={
   HAPVIDA:['SEM REEMBOLSO','PARCIAL'],AMIL:['PARCIAL'],BRADESCO:['PARCIAL'],
@@ -536,19 +494,13 @@ function buildOpBar(mod){
     // Vigência
     const fgVig=mk('div','fg');const lVig=mk('label');lVig.textContent='Vigência';
     const selVig=mk('select');selVig.innerHTML='<option value="">Todas</option>';
-    (ENUMS.VIGÊNCIA||['12','24']).forEach(v=>{const o=mk('option');o.value=v;o.textContent=v+' meses';if(v===c.vig)o.selected=true;selVig.appendChild(o);});
+    (ENUMS['VIGÊNCIA']||['12','24']).forEach(v=>{const o=mk('option');o.value=v;o.textContent=v+' meses';if(v===c.vig)o.selected=true;selVig.appendChild(o);});
     selVig.onchange=()=>{c.vig=selVig.value;doRender(mod);};
     fgVig.append(lVig,selVig);fields.appendChild(fgVig);
-    // Linha (só se op tiver múltiplas linhas)
-    const opI_l=ei('OPERADORA',op);
-    const opLinhas=(ENUMS.LINHA||[]).filter(l=>{const li=ei('LINHA',l);return AGE_D.some(r=>r[Ai.op]===opI_l&&r[Ai.linha]===li);});
-    if(opLinhas.length>1){
-      const fgL=mk('div','fg');const lL=mk('label');lL.textContent='Linha';
-      const selL=mk('select');selL.innerHTML='<option value="">Todas</option>';
-      opLinhas.forEach(v=>{const o=mk('option');o.value=v;o.textContent=v;if(v===c.linha)o.selected=true;selL.appendChild(o);});
-      selL.onchange=()=>{c.linha=selL.value;doRender(mod);};
-      fgL.append(lL,selL);fields.appendChild(fgL);
-    }
+    // Linha
+    const opI_l=ei('OPERADORA',op);const TiL={op:RAW.tm_cols.indexOf('OPERADORA'),l:RAW.tm_cols.indexOf('LINHA')};
+    const opLinhas=(ENUMS.LINHA||[]).filter(l=>{const li=ei('LINHA',l);return RAW.tm.some(r=>r[TiL.op]===opI_l&&r[TiL.l]===li);});
+    if(opLinhas.length>1){const fgL=mk('div','fg');const lL=mk('label');lL.textContent='Linha';const selL=mk('select');selL.innerHTML='<option value="">Todas</option>';opLinhas.forEach(v=>{const o=mk('option');o.value=v;o.textContent=v;if(v===c.linha)o.selected=true;selL.appendChild(o);});selL.onchange=()=>{c.linha=selL.value;doRender(mod);};fgL.append(lL,selL);fields.appendChild(fgL);}
     // Simulador %
     const fgD=mk('div','fg');const lD=mk('label');lD.textContent='Simulador %';
     const inpD=mk('input');inpD.type='number';inpD.step='0.1';inpD.value=c.disc;
@@ -560,37 +512,30 @@ function buildOpBar(mod){
 
 // ════════════ FILTER ROWS ════════════
 function filterRows(op,mod){
-  const c=cfg[op][mod];
-  const opI=ei('OPERADORA',op);
-  const filN=mod==='m1'?1:2;
-  const filI=ei('FILIAL',gv('f'+filN+'-fil')||'');
+  const c=cfg[op][mod],n=mod==='m1'?1:2;
+  const opI=ei('OPERADORA',op),filI=ei('FILIAL',gv('f'+n+'-fil')||'');
   const acI=mod==='m1'?ei('ACOMODACAO',gv('f1-acom')||''):-1;
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
-  const cpSel=document.getElementById('f'+filN+'-copart');
-  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1)
-    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
-  const ufVal=gv('f-uf')||''; const ufI=ufVal?ei('UF',ufVal):-1;
-  const meiVal=gv('f-mei')||''; const meiI=meiVal?ei('MEI',meiVal):-1;
-  const adesaoVal=gv('f-adesao')||''; const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
-  const titI=c.titular?ei('TITULAR',c.titular):-1;
-  const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
-  const linhaI=c.linha?ei('LINHA',c.linha):-1;
+  const sel=document.getElementById('f'+n+'-copart');
+  const abrIs=sel?[...sel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1):[];
+  const ufI=ei('UF',gv('f-uf')||''),meiI=ei('MEI',gv('f-mei')||''),adsI=ei('TP_ADESAO',gv('f-adesao')||'');
+  const titI=c.titular?ei('TITULAR',c.titular):-1,vigI=c.vig?ei('VIGÊNCIA',c.vig):-1,lnhI=c.linha?ei('LINHA',c.linha):-1;
   return AGE_D.filter(r=>{
     if(r[Ai.op]!==opI)return false;
     if(filI>=0&&r[Ai.fil]!==filI)return false;
     if(acI>=0&&r[Ai.acom]!==acI)return false;
     if(fvI>=0&&r[Ai.fv]!==fvI)return false;
-    if(rIs.length>0&&!rIs.includes(r[Ai.remb]))return false;
+    if(rIs.length&&!rIs.includes(r[Ai.remb]))return false;
     if(plI>=0&&r[Ai.pl]!==plI)return false;
-    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr]))return false;
+    if(abrIs.length&&!abrIs.includes(r[Ai.abr]))return false;
     if(ufI>=0&&r[Ai.uf]!==ufI)return false;
     if(meiI>=0&&r[Ai.mei]!==meiI)return false;
-    if(adesaoI>=0&&r[Ai.tp_adesao]!==adesaoI)return false;
+    if(adsI>=0&&r[Ai.tp_adesao]!==adsI)return false;
     if(titI>=0&&r[Ai.titular]!==titI)return false;
     if(vigI>=0&&r[Ai.vig]!==vigI)return false;
-    if(linhaI>=0&&r[Ai.linha]!==linhaI)return false;
+    if(lnhI>=0&&r[Ai.linha]!==lnhI)return false;
     return true;
   });
 }
@@ -688,85 +633,56 @@ function renderM1(){
 
 // ════════════ MODULE 2 — EQUIVALENCY TABLE ════════════
 // Fetch TM for a specific op+plan+acom combination given current filters
-function fetchTM(op, plan, acom, mod){
-  if(!plan) return null;
-  const c = cfg[op][mod];
-  const TM = RAW.tm;
-  const TC = RAW.tm_cols;
-  // Build index map for TM columns
-  const Ti = {
-    op:TC.indexOf('OPERADORA'), pl:TC.indexOf('NM_PLANO'),
-    acom:TC.indexOf('ACOMODACAO'), fil:TC.indexOf('FILIAL'),
-    abr:TC.indexOf('ABRANGENCIA'), fv:TC.indexOf('FAIXA_DE_VIDAS'),
-    tp_adesao:TC.indexOf('TP_ADESAO'), mei:TC.indexOf('MEI'),
-    linha:TC.indexOf('LINHA'), remb:TC.indexOf('REEMBOLSO'),
-    titular:TC.indexOf('TITULAR'), vig:TC.indexOf('VIGÊNCIA'),
-    tm:TC.indexOf('TICKET_MEDIO'),
-  };
-  const opI  = ei('OPERADORA', op);
-  const plI  = ei('NM_PLANO', plan);
-  const acI  = ei('ACOMODACAO', acom);
-  const filN = mod === 'm1' ? 1 : 2;
-  const filI = ei('FILIAL', gv('f'+filN+'-fil') || '');
-  const cpSel = document.getElementById('f'+filN+'-copart');
-  const abrIdxs = cpSel
-    ? [...cpSel.selectedOptions].map(o => o.value === '' ? -1 : ei('ABRANGENCIA', o.value)).filter(i => i >= -1)
-    : (ENUMS.ABRANGENCIA || []).map((_, i) => i);
-  const meiI    = gv('f-mei')    ? ei('MEI',      gv('f-mei'))    : -1;
-  const adesaoI = gv('f-adesao') ? ei('TP_ADESAO', gv('f-adesao')): -1;
-  const fvI     = c.fv      ? ei('FAIXA_DE_VIDAS', c.fv)     : -1;
-  const rIs     = (c.remb && c.remb.length) ? c.remb.map(v => ei('REEMBOLSO', v)).filter(i => i >= 0) : [];
-  const titI    = c.titular ? ei('TITULAR',  c.titular) : -1;
-  const vigI    = c.vig     ? ei('VIGÊNCIA', c.vig)     : -1;
-  const linhaI  = c.linha   ? ei('LINHA',    c.linha)   : -1;
-  const rows = TM.filter(r => {
-    if(r[Ti.op] !== opI || r[Ti.pl] !== plI || r[Ti.acom] !== acI) return false;
-    if(filI >= 0 && r[Ti.fil] !== filI) return false;
-    if(abrIdxs.length > 0 && !abrIdxs.includes(r[Ti.abr])) return false;
-    if(fvI >= 0 && r[Ti.fv] !== fvI) return false;
-    if(rIs.length > 0 && !rIs.includes(r[Ti.remb])) return false;
-    if(meiI >= 0 && r[Ti.mei] !== meiI) return false;
-    if(adesaoI >= 0 && r[Ti.tp_adesao] !== adesaoI) return false;
-    if(titI >= 0 && r[Ti.titular] !== titI) return false;
-    if(vigI >= 0 && r[Ti.vig] !== vigI) return false;
-    if(linhaI >= 0 && r[Ti.linha] !== linhaI) return false;
+function fetchTM(op,plan,acom,mod){
+  if(!plan)return null;
+  const c=cfg[op][mod],TM=RAW.tm,TC=RAW.tm_cols;
+  const Ti={op:TC.indexOf('OPERADORA'),pl:TC.indexOf('NM_PLANO'),acom:TC.indexOf('ACOMODACAO'),fil:TC.indexOf('FILIAL'),abr:TC.indexOf('ABRANGENCIA'),fv:TC.indexOf('FAIXA_DE_VIDAS'),tp_adesao:TC.indexOf('TP_ADESAO'),mei:TC.indexOf('MEI'),linha:TC.indexOf('LINHA'),remb:TC.indexOf('REEMBOLSO'),titular:TC.indexOf('TITULAR'),vig:TC.indexOf('VIGÊNCIA'),tm:TC.indexOf('TICKET_MEDIO')};
+  const n=mod==='m1'?1:2;
+  const opI=ei('OPERADORA',op),plI=ei('NM_PLANO',plan),acI=ei('ACOMODACAO',acom),filI=ei('FILIAL',gv('f'+n+'-fil')||'');
+  const sel=document.getElementById('f'+n+'-copart');
+  const abrIs=sel?[...sel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1):[];
+  const meiI=ei('MEI',gv('f-mei')||''),adsI=ei('TP_ADESAO',gv('f-adesao')||'');
+  const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
+  const rIs=(c.remb&&c.remb.length)?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
+  const titI=c.titular?ei('TITULAR',c.titular):-1,vigI=c.vig?ei('VIGÊNCIA',c.vig):-1,lnhI=c.linha?ei('LINHA',c.linha):-1;
+  const rows=TM.filter(r=>{
+    if(r[Ti.op]!==opI||r[Ti.pl]!==plI||r[Ti.acom]!==acI)return false;
+    if(filI>=0&&r[Ti.fil]!==filI)return false;
+    if(abrIs.length&&!abrIs.includes(r[Ti.abr]))return false;
+    if(fvI>=0&&r[Ti.fv]!==fvI)return false;
+    if(rIs.length&&!rIs.includes(r[Ti.remb]))return false;
+    if(meiI>=0&&r[Ti.mei]!==meiI)return false;
+    if(adsI>=0&&r[Ti.tp_adesao]!==adsI)return false;
+    if(titI>=0&&r[Ti.titular]!==titI)return false;
+    if(vigI>=0&&r[Ti.vig]!==vigI)return false;
+    if(lnhI>=0&&r[Ti.linha]!==lnhI)return false;
     return true;
   });
-  if(!rows.length) return null;
-  const avg = rows.reduce((s, r) => s + r[Ti.tm], 0) / rows.length;
-  return avg * (1 + (c.disc || 0) / 100);
+  if(!rows.length)return null;
+  return rows.reduce((s,r)=>s+r[Ti.tm],0)/rows.length*(1+(c.disc||0)/100);
 }
+
 // Get available plans for an operator given current M2 filters (no plan filter)
 function availPlansForOp(op){
-  // Use RAW.tm so M2 works before AGE_D loads
-  const TM = RAW.tm;
-  const TC = RAW.tm_cols;
-  const opI  = ei('OPERADORA', op);
-  const filI = ei('FILIAL', gv('f2-fil') || '');
-  const cpSel = document.getElementById('f2-copart');
-  const abrIdxs = cpSel
-    ? [...cpSel.selectedOptions].map(o => o.value === '' ? -1 : ei('ABRANGENCIA', o.value)).filter(i => i >= -1)
-    : [];
-  const Ti = {
-    op:TC.indexOf('OPERADORA'), pl:TC.indexOf('NM_PLANO'),
-    fil:TC.indexOf('FILIAL'), abr:TC.indexOf('ABRANGENCIA'),
-    fv:TC.indexOf('FAIXA_DE_VIDAS'), remb:TC.indexOf('REEMBOLSO'),
-  };
-  const c = cfg[op].m2;
-  const fvI = c.fv ? ei('FAIXA_DE_VIDAS', c.fv) : -1;
-  const rIs = (c.remb && c.remb.length) ? c.remb.map(v => ei('REEMBOLSO', v)).filter(i => i >= 0) : [];
-  const plans = new Set();
-  TM.forEach(r => {
-    if(r[Ti.op] !== opI) return;
-    if(filI >= 0 && r[Ti.fil] !== filI) return;
-    if(abrIdxs.length > 0 && !abrIdxs.includes(r[Ti.abr])) return;
-    if(fvI >= 0 && r[Ti.fv] !== fvI) return;
-    if(rIs.length > 0 && !rIs.includes(r[Ti.remb])) return;
-    const pname = ENUMS.NM_PLANO[r[Ti.pl]];
-    if(pname) plans.add(pname);
+  const TM=RAW.tm,TC=RAW.tm_cols;
+  const Ti={op:TC.indexOf('OPERADORA'),pl:TC.indexOf('NM_PLANO'),fil:TC.indexOf('FILIAL'),abr:TC.indexOf('ABRANGENCIA'),fv:TC.indexOf('FAIXA_DE_VIDAS'),remb:TC.indexOf('REEMBOLSO')};
+  const opI=ei('OPERADORA',op),filI=ei('FILIAL',gv('f2-fil')||'');
+  const sel=document.getElementById('f2-copart');
+  const abrIs=sel?[...sel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1):[];
+  const c=cfg[op].m2,fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
+  const rIs=(c.remb&&c.remb.length)?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
+  const plans=new Set();
+  TM.forEach(r=>{
+    if(r[Ti.op]!==opI)return;
+    if(filI>=0&&r[Ti.fil]!==filI)return;
+    if(abrIs.length&&!abrIs.includes(r[Ti.abr]))return;
+    if(fvI>=0&&r[Ti.fv]!==fvI)return;
+    if(rIs.length&&!rIs.includes(r[Ti.remb]))return;
+    const p=ENUMS.NM_PLANO[r[Ti.pl]];if(p)plans.add(p);
   });
   return [...plans].sort();
 }
+
 function renderM2(){
   const {ops,anchor}=state.m2;
   const thead=document.getElementById('m2-thead');
@@ -1033,14 +949,11 @@ function switchTab(mod){
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+mod));
   if(mod==='m1')renderM1();else if(mod==='m2')renderM2();else if(mod==='m3')renderM3();
 }
+window.switchTab=switchTab;window.addEquivRow=addEquivRow;window.applyDist=applyDist;window.resetDist=resetDist;window.updateDistSum=updateDistSum;
 
-// DOMContentLoaded handled by loadData
-window.switchTab=switchTab;window.addEquivRow=addEquivRow;
-window.applyDist=applyDist;window.resetDist=resetDist;
-window.updateDistSum=updateDistSum;
+
 
 }
-
 window.addEventListener('DOMContentLoaded',loadData);
 </script>
 </html>
