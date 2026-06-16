@@ -151,7 +151,9 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 </style>
 </head>
 <body>
-<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt">Carregando base de preços...</div></div>
+<div id="loading"><div class="spr"><div class="spr-ring"></div><div class="spr-lbl">H</div></div><div class="ldtxt">Carregando dados...</div>
+  <div style="width:220px;height:4px;background:#e8eaf0;border-radius:2px;margin-top:10px;overflow:hidden"><div id="loading-bar" style="width:0%;height:100%;background:var(--hap);border-radius:2px;transition:width 0.3s ease"></div></div>
+</div>
 
 <header>
   <div class="logo">H</div>
@@ -168,11 +170,7 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 
 <!-- M1 -->
 <div id="panel-m1" class="panel active">
-  <div id="m1-loading-msg" style="display:none;text-align:center;padding:30px;color:var(--text2)">
-    <div style="font-size:24px;margin-bottom:8px">⏳</div>
-    Carregando dados de faixa etária...<br>
-    <span style="font-size:11px">Módulos 2, 3 e 4 já disponíveis</span>
-  </div>
+  <div id="m1-loading-msg" style="display:none;text-align:center;padding:30px;color:var(--text2)"><div style="font-size:24px;margin-bottom:8px">⏳</div>Carregando faixa etária...<br><span style="font-size:11px">Módulos 2, 3 e 4 já disponíveis</span></div>
   <div class="op-mgmt"><div class="op-mgmt-title">🏢 Operadoras — ⚓ define âncora · ✕ remove · ＋ adiciona</div><div class="op-slots" id="slots-m1"></div></div>
   <div class="fbar">
     <div class="fg"><label>Município</label><select id="f1-fil" onchange="renderM1()"></select></div>
@@ -192,6 +190,11 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
         <option value="">Sem copart.</option>
       </select>
     </div>
+    <div class="fg"><label>UF</label>
+      <select id="f-uf" onchange="renderM1();renderM2()">
+        <option value="">Todas</option>
+      </select>
+    </div>
     <div class="fg"><label>MEI</label>
       <select id="f-mei" onchange="renderM1();renderM2()">
         <option value="">Todos</option>
@@ -204,11 +207,6 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
         <option value="">Todos</option>
         <option value="OPCIONAL">Opcional</option>
         <option value="COMPULSÓRIA">Compulsória</option>
-      </select>
-    </div>
-    <div class="fg"><label>UF</label>
-      <select id="f-uf" onchange="renderM1();renderM2()">
-        <option value="">Todas</option>
       </select>
     </div>
   </div>
@@ -276,102 +274,85 @@ tr.tm-row td{background:var(--bg3);font-weight:700;border-top:2px solid var(--bo
 </div>
 
 <script>
-const GITHUB_BASE = 'https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
+const GITHUB_BASE='https://raw.githubusercontent.com/bguerraferreira/market-intel/refs/heads/main/';
+let RAW,EQUIV_ROWS;
 
-async function loadData() {
-  const loadEl = document.getElementById('loading');
-  const loadTxt = document.getElementById('loading-text');
-  const loadBar = document.getElementById('loading-bar');
-
-  function setMsg(msg) { if(loadTxt) loadTxt.textContent = msg; console.log('[Dashboard]', msg); }
-  function setProgress(pct) { if(loadBar) loadBar.style.width = Math.min(100,pct) + '%'; }
-
-  async function fetchWithProgress(url, label, onProgress) {
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('Erro ' + label + ': ' + res.status + ' — verifique a URL do repositório.');
-    const total = parseInt(res.headers.get('content-length') || '0');
-    let loaded = 0;
-    const reader = res.body.getReader();
-    const chunks = [];
-    while(true) {
-      const {done, value} = await reader.read();
-      if(done) break;
-      chunks.push(value);
-      loaded += value.length;
-      if(total > 0 && onProgress) onProgress(loaded / total);
-    }
+async function loadData(){
+  const loadEl=document.getElementById('loading');
+  const loadTxt=document.getElementById('loading-text');
+  const loadBar=document.getElementById('loading-bar');
+  function setMsg(m){if(loadTxt)loadTxt.textContent=m;console.log('[Dashboard]',m);}
+  function setProgress(p){if(loadBar)loadBar.style.width=Math.min(100,p)+'%';}
+  async function fetchWithProgress(url,label,onProg){
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('Erro '+label+': '+res.status+' — verifique o repositório.');
+    const total=parseInt(res.headers.get('content-length')||'0');
+    let loaded=0;const reader=res.body.getReader();const chunks=[];
+    while(true){const{done,value}=await reader.read();if(done)break;chunks.push(value);loaded+=value.length;if(total>0&&onProg)onProg(loaded/total);}
     return JSON.parse(await new Blob(chunks).text());
   }
-
-  try {
-    // FASE 1: meta (2.5MB) + equiv → abre M2/M3/M4 imediatamente
-    setMsg('Carregando dados...'); setProgress(5);
-    const [meta, equivData] = await Promise.all([
-      fetchWithProgress(GITHUB_BASE + 'data_meta.json', 'meta', p => setProgress(5 + p*60)),
-      fetchWithProgress(GITHUB_BASE + 'data_equiv.json', 'equiv'),
+  try{
+    setMsg('Carregando dados principais...'); setProgress(5);
+    const[meta,equivData]=await Promise.all([
+      fetchWithProgress(GITHUB_BASE+'data_meta.json','meta',p=>setProgress(5+p*60)),
+      fetchWithProgress(GITHUB_BASE+'data_equiv.json','equiv'),
     ]);
     setProgress(68);
-
-    window.RAW = {
-      enums: meta.enums, age_cols: meta.age_cols,
-      tm_cols: meta.tm_cols, dist_etaria: meta.dist_etaria,
-      age: [], tm: meta.tm,
-    };
-    window.EQUIV_ROWS_LOADED = equivData;
-
+    window.RAW={enums:meta.enums,age_cols:meta.age_cols,tm_cols:meta.tm_cols,
+      dist_etaria:meta.dist_etaria,age:[],tm:meta.tm};
+    window.EQUIV_ROWS_LOADED=equivData;
     setMsg('Inicializando...'); setProgress(72);
-    try { initApp(); } catch(e) { console.error('initApp:', e); throw e; }
-
-    // Mostra dashboard, vai para M2
-    if(loadEl) loadEl.style.display = 'none';
+    try{initApp();}catch(e){console.error('initApp:',e);throw e;}
+    if(loadEl)loadEl.style.display='none';
     switchTab('m2');
-
-    // Sinaliza M1 como carregando
-    const m1btn = document.querySelector('[onclick=\"switchTab(\'m1\')\"]');
-    if(m1btn) { m1btn.style.opacity='0.5'; m1btn.title='Faixa etária: carregando...'; }
-    const m1msg = document.getElementById('m1-loading-msg');
-    if(m1msg) m1msg.style.display = 'block';
-
-    // FASE 2: age em background → habilita M1
-    const age1 = await fetchWithProgress(GITHUB_BASE + 'data_age_1.json', 'age_1', p => setProgress(72 + p*13));
+    const m1btn=document.querySelector('[onclick=\"switchTab(\'m1\')\"]');
+    if(m1btn){m1btn.style.opacity='0.5';m1btn.title='Faixa etária: carregando...';}
+    const m1msg=document.getElementById('m1-loading-msg');
+    if(m1msg)m1msg.style.display='block';
+    const age1=await fetchWithProgress(GITHUB_BASE+'data_age_1.json','age_1',p=>setProgress(72+p*13));
     setProgress(85);
-    const age2 = await fetchWithProgress(GITHUB_BASE + 'data_age_2.json', 'age_2', p => setProgress(85 + p*14));
+    const age2=await fetchWithProgress(GITHUB_BASE+'data_age_2.json','age_2',p=>setProgress(85+p*14));
     setProgress(100);
-
-    window.RAW.age = [...age1.age, ...age2.age];
-    window.AGE_D   = window.RAW.age;
-
-    if(m1btn) { m1btn.style.opacity='1'; m1btn.title=''; }
-    if(m1msg) m1msg.style.display = 'none';
-    console.log('[Dashboard] M1 pronto —', window.RAW.age.length, 'linhas');
-
-  } catch(err) {
-    console.error('[Dashboard]', err);
-    if(loadEl) {
-      loadEl.style.display = 'flex';
-      loadEl.innerHTML = '<div style="text-align:center;padding:40px;max-width:500px">' +
-        '<div style="font-size:28px;margin-bottom:10px">⚠️</div>' +
-        '<div style="font-size:14px;font-weight:700;color:#c82020;margin-bottom:8px">Erro ao carregar</div>' +
-        '<div style="font-size:12px;color:#5a6484;margin-bottom:14px">' + err.message + '</div>' +
-        '<button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">Tentar novamente</button>' +
+    window.RAW.age=[...age1.age,...age2.age];
+    window.AGE_D=window.RAW.age;
+    if(typeof AGE_D!=='undefined')AGE_D=window.AGE_D;
+    if(m1btn){m1btn.style.opacity='1';m1btn.title='';}
+    if(m1msg)m1msg.style.display='none';
+    console.log('[Dashboard] M1 pronto —',window.RAW.age.length,'linhas');
+  }catch(err){
+    console.error('[Dashboard]',err);
+    if(loadEl){
+      loadEl.style.display='flex';
+      loadEl.innerHTML='<div style="text-align:center;padding:40px;max-width:500px">'+
+        '<div style="font-size:28px">⚠️</div>'+
+        '<div style="font-size:14px;font-weight:700;color:#c82020;margin:8px 0">Erro ao carregar</div>'+
+        '<div style="font-size:12px;color:#5a6484;margin-bottom:14px">'+err.message+'</div>'+
+        '<button onclick="location.reload()" style="padding:8px 20px;background:#E84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Tentar novamente</button>'+
         '</div>';
     }
   }
 }
 
-let RAW, EQUIV_ROWS;
-function initApp() {
-  RAW = window.RAW;
-  EQUIV_ROWS = window.EQUIV_ROWS_LOADED;
+function initApp(){
+  RAW=window.RAW;
+  EQUIV_ROWS=window.EQUIV_ROWS_LOADED;
+const ENUMS=RAW.enums, AGE_C=RAW.age_cols, AGE_D=RAW.age;
+const FAIXAS=['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
+let DIST={...RAW.dist_etaria};
+const DIST0={...RAW.dist_etaria};
+const ALL_OPS=[...ENUMS['OPERADORA']];
+const OP_COLOR={
+  HAPVIDA:'#E84118',AMIL:'#2563eb',BRADESCO:'#c82020',
+  SULAMERICA:'#b45309',PORTO:'#6d28d9',
+  'CARE PLUS':'#0891b2','OMINT':'#0d9488',
+  SELECT:'#64748b','SEG. UNIMED':'#16a34a',
+  ALICE:'#db2777','SÃO BERNARDO':'#7c3aed',
+};
+
 
 function oc(op){return OP_COLOR[op]||'#5a6484';}
 
-// Col indices — AGE_C comes from RAW which is set before initApp runs
-const AGE_C = RAW.age_cols;
-const ENUMS = RAW.enums;
-let AGE_D = RAW.age;
-const FAIXAS = ENUMS.FAIXA_ETARIA || ['0 A 18','19 A 23','24 A 28','29 A 33','34 A 38','39 A 43','44 A 48','49 A 53','54 A 58','59 OU +'];
-const DIST = RAW.dist_etaria || {};
+// Col indices — declared BEFORE OP_FV to avoid ReferenceError
 const Ai={
   dt:AGE_C.indexOf('DT_EXPORTACAO'),uf:AGE_C.indexOf('UF'),
   fil:AGE_C.indexOf('FILIAL'),op:AGE_C.indexOf('OPERADORA'),
@@ -392,10 +373,6 @@ ALL_OPS.forEach(op=>{
   OP_FV[op]=[...s].sort();
 });
 
-const OP_PLAN_DEFAULT_M1={
-  HAPVIDA:'600 SP',AMIL:'PRATA',BRADESCO:'EFETIVO',
-  SULAMERICA:'DIRETO NACIONAL',PORTO:'P220',
-};
 const OP_FV_DEFAULT={
   HAPVIDA:'2 A 29',AMIL:'5 A 29',BRADESCO:'3 A 29',SULAMERICA:'5 A 29',PORTO:'3 A 29',
   'CARE PLUS':'2 A 29',OMINT:'4 A 29','SEG. UNIMED':'','SELECT':'',ALICE:'','SÃO BERNARDO':''
@@ -450,13 +427,8 @@ function gv(id){const e=document.getElementById(id);return e?e.value:'';}
 
 // ════════════ INIT ════════════
 function init(){
-  // Populate UF filter
   const ufSel=document.getElementById('f-uf');
-  if(ufSel&&ENUMS.UF){
-    [...ENUMS.UF].sort().forEach(u=>{
-      const o=mk('option');o.value=u;o.textContent=u;ufSel.appendChild(o);
-    });
-  }
+  if(ufSel&&ENUMS.UF){[...ENUMS.UF].sort().forEach(u=>{const o=mk('option');o.value=u;o.textContent=u;ufSel.appendChild(o);});}
   const fils=[...ENUMS.FILIAL].sort();
   ['f1-fil','f2-fil','f3-fil'].forEach(id=>{
     const s=document.getElementById(id);
@@ -553,31 +525,22 @@ function buildOpBar(mod){
     fgFv.append(lFv,selFv);fields.appendChild(fgFv);
     // Titular
     const fgTit=mk('div','fg');const lTit=mk('label');lTit.textContent='Titular';
-    const selTit=mk('select');
-    selTit.innerHTML='<option value="">Todos</option>';
-    (ENUMS.TITULAR||['1','2']).forEach(v=>{
-      const o=mk('option');o.value=v;o.textContent=v+' titular'+(v==='1'?'':'es');
-      if(v===c.titular)o.selected=true;selTit.appendChild(o);
-    });
+    const selTit=mk('select');selTit.innerHTML='<option value="">Todos</option>';
+    (ENUMS.TITULAR||['1','2']).forEach(v=>{const o=mk('option');o.value=v;o.textContent=v+' titular'+(v==='1'?'':'es');if(v===c.titular)o.selected=true;selTit.appendChild(o);});
     selTit.onchange=()=>{c.titular=selTit.value;doRender(mod);};
     fgTit.append(lTit,selTit);fields.appendChild(fgTit);
     // Vigência
     const fgVig=mk('div','fg');const lVig=mk('label');lVig.textContent='Vigência';
-    const selVig=mk('select');
-    selVig.innerHTML='<option value="">Todas</option>';
-    (ENUMS.VIGÊNCIA||['12','24']).forEach(v=>{
-      const o=mk('option');o.value=v;o.textContent=v+' meses';
-      if(v===c.vig)o.selected=true;selVig.appendChild(o);
-    });
+    const selVig=mk('select');selVig.innerHTML='<option value="">Todas</option>';
+    (ENUMS.VIGÊNCIA||['12','24']).forEach(v=>{const o=mk('option');o.value=v;o.textContent=v+' meses';if(v===c.vig)o.selected=true;selVig.appendChild(o);});
     selVig.onchange=()=>{c.vig=selVig.value;doRender(mod);};
     fgVig.append(lVig,selVig);fields.appendChild(fgVig);
-    // Linha
+    // Linha (só se op tiver múltiplas linhas)
     const opI_l=ei('OPERADORA',op);
-    const opLinhas=(ENUMS.LINHA||[]).filter(l=>AGE_D.some(r=>r[Ai.op]===opI_l&&r[Ai.linha]===ei('LINHA',l)));
+    const opLinhas=(ENUMS.LINHA||[]).filter(l=>{const li=ei('LINHA',l);return AGE_D.some(r=>r[Ai.op]===opI_l&&r[Ai.linha]===li);});
     if(opLinhas.length>1){
       const fgL=mk('div','fg');const lL=mk('label');lL.textContent='Linha';
-      const selL=mk('select');
-      selL.innerHTML='<option value="">Todas</option>';
+      const selL=mk('select');selL.innerHTML='<option value="">Todas</option>';
       opLinhas.forEach(v=>{const o=mk('option');o.value=v;o.textContent=v;if(v===c.linha)o.selected=true;selL.appendChild(o);});
       selL.onchange=()=>{c.linha=selL.value;doRender(mod);};
       fgL.append(lL,selL);fields.appendChild(fgL);
@@ -601,35 +564,29 @@ function filterRows(op,mod){
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const plI=mod==='m1'&&c.plan?ei('NM_PLANO',c.plan):-1;
-  // Coparticipação: multi-select de ABRANGENCIA
   const cpSel=document.getElementById('f'+filN+'-copart');
-  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
+  const abrIdxs=cpSel?[...cpSel.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1)
     :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
-  // Filtros globais
-  const ufVal=gv('f-uf')||'';
-  const ufI=ufVal?ei('UF',ufVal):-1;
-  const meiVal=gv('f-mei')||'';
-  const adesaoVal=gv('f-adesao')||'';
-  const meiI=meiVal?ei('MEI',meiVal):-1;
-  const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
-  // Filtros por operadora
+  const ufVal=gv('f-uf')||''; const ufI=ufVal?ei('UF',ufVal):-1;
+  const meiVal=gv('f-mei')||''; const meiI=meiVal?ei('MEI',meiVal):-1;
+  const adesaoVal=gv('f-adesao')||''; const adesaoI=adesaoVal?ei('TP_ADESAO',adesaoVal):-1;
   const titI=c.titular?ei('TITULAR',c.titular):-1;
   const vigI=c.vig?ei('VIGÊNCIA',c.vig):-1;
   const linhaI=c.linha?ei('LINHA',c.linha):-1;
   return AGE_D.filter(r=>{
-    if(r[Ai.op]!==opI) return false;
-    if(filI>=0&&r[Ai.fil]!==filI) return false;
-    if(acI>=0&&r[Ai.acom]!==acI) return false;
-    if(fvI>=0&&r[Ai.fv]!==fvI) return false;
-    if(rIs.length>0&&!rIs.includes(r[Ai.remb])) return false;
-    if(plI>=0&&r[Ai.pl]!==plI) return false;
-    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr])) return false;
-    if(ufI>=0&&r[Ai.uf]!==ufI) return false;
-    if(meiI>=0&&r[Ai.mei]!==meiI) return false;
-    if(adesaoI>=0&&r[Ai.tp_adesao]!==adesaoI) return false;
-    if(titI>=0&&r[Ai.titular]!==titI) return false;
-    if(vigI>=0&&r[Ai.vig]!==vigI) return false;
-    if(linhaI>=0&&r[Ai.linha]!==linhaI) return false;
+    if(r[Ai.op]!==opI)return false;
+    if(filI>=0&&r[Ai.fil]!==filI)return false;
+    if(acI>=0&&r[Ai.acom]!==acI)return false;
+    if(fvI>=0&&r[Ai.fv]!==fvI)return false;
+    if(rIs.length>0&&!rIs.includes(r[Ai.remb]))return false;
+    if(plI>=0&&r[Ai.pl]!==plI)return false;
+    if(abrIdxs.length>0&&!abrIdxs.includes(r[Ai.abr]))return false;
+    if(ufI>=0&&r[Ai.uf]!==ufI)return false;
+    if(meiI>=0&&r[Ai.mei]!==meiI)return false;
+    if(adesaoI>=0&&r[Ai.tp_adesao]!==adesaoI)return false;
+    if(titI>=0&&r[Ai.titular]!==titI)return false;
+    if(vigI>=0&&r[Ai.vig]!==vigI)return false;
+    if(linhaI>=0&&r[Ai.linha]!==linhaI)return false;
     return true;
   });
 }
@@ -735,22 +692,28 @@ function fetchTM(op, plan, acom, mod){
   const acI=ei('ACOMODACAO',acom);
   const filI=ei('FILIAL',gv('f2-fil')||'');
   const cpSel2=document.getElementById('f2-copart');
-  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
+  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i>=-1)
     :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
-  const meiValFTM=gv('f-mei')||'';
-  const adesaoValFTM=gv('f-adesao')||'';
-  const meiIFTM=meiValFTM?ei('MEI',meiValFTM):-1;
-  const adesaoIFTM=adesaoValFTM?ei('TP_ADESAO',adesaoValFTM):-1;
+  const meiIFTM=gv('f-mei')?ei('MEI',gv('f-mei')):-1;
+  const adesaoIFTM=gv('f-adesao')?ei('TP_ADESAO',gv('f-adesao')):-1;
   const titIFTM=c.titular?ei('TITULAR',c.titular):-1;
   const vigIFTM=c.vig?ei('VIGÊNCIA',c.vig):-1;
   const linhaIFTM=c.linha?ei('LINHA',c.linha):-1;
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
-  const rows=AGE_D.filter(r=>
-    r[Ai.op]===opI&&r[Ai.pl]===plI&&r[Ai.acom]===acI&&
-    (filI<0||r[Ai.fil]===filI)&&(abrIdxsFTM.length===0||abrIdxsFTM.includes(r[Ai.abr]))&&(meiIFTM<0||r[Ai.mei]===meiIFTM)&&(adesaoIFTM<0||r[Ai.tp_adesao]===adesaoIFTM)&&(titIFTM<0||r[Ai.titular]===titIFTM)&&(vigIFTM<0||r[Ai.vig]===vigIFTM)&&(linhaIFTM<0||r[Ai.linha]===linhaIFTM)&&
-    (fvI<0||r[Ai.fv]===fvI)&&(rIs.length===0||rIs.includes(r[Ai.remb]))
-  );
+  const rows=AGE_D.filter(r=>{
+    if(r[Ai.op]!==opI||r[Ai.pl]!==plI||r[Ai.acom]!==acI)return false;
+    if(filI>=0&&r[Ai.fil]!==filI)return false;
+    if(abrIdxsFTM.length>0&&!abrIdxsFTM.includes(r[Ai.abr]))return false;
+    if(fvI>=0&&r[Ai.fv]!==fvI)return false;
+    if(rIs.length>0&&!rIs.includes(r[Ai.remb]))return false;
+    if(meiIFTM>=0&&r[Ai.mei]!==meiIFTM)return false;
+    if(adesaoIFTM>=0&&r[Ai.tp_adesao]!==adesaoIFTM)return false;
+    if(titIFTM>=0&&r[Ai.titular]!==titIFTM)return false;
+    if(vigIFTM>=0&&r[Ai.vig]!==vigIFTM)return false;
+    if(linhaIFTM>=0&&r[Ai.linha]!==linhaIFTM)return false;
+    return true;
+  });
   if(!rows.length)return null;
   const byFe={};
   rows.forEach(r=>{const fe=dv('FAIXA_ETARIA',r[Ai.fe]);if(!byFe[fe])byFe[fe]={s:0,n:0};byFe[fe].s+=r[Ai.pr];byFe[fe].n++;});
@@ -763,16 +726,7 @@ function availPlansForOp(op){
   const c=cfg[op].m2;
   const opI=ei('OPERADORA',op);
   const filI=ei('FILIAL',gv('f2-fil')||'');
-  const cpSel2=document.getElementById('f2-copart');
-  const abrIdxsFTM=cpSel2?[...cpSel2.selectedOptions].map(o=>o.value===''?-1:ei('ABRANGENCIA',o.value)).filter(i=>i!==-2)
-    :(ENUMS.ABRANGENCIA||[]).map((_,i)=>i);
-  const meiValFTM=gv('f-mei')||'';
-  const adesaoValFTM=gv('f-adesao')||'';
-  const meiIFTM=meiValFTM?ei('MEI',meiValFTM):-1;
-  const adesaoIFTM=adesaoValFTM?ei('TP_ADESAO',adesaoValFTM):-1;
-  const titIFTM=c.titular?ei('TITULAR',c.titular):-1;
-  const vigIFTM=c.vig?ei('VIGÊNCIA',c.vig):-1;
-  const linhaIFTM=c.linha?ei('LINHA',c.linha):-1;
+  const cpI=ei('TP_COPART',gv('f2-copart')||'');
   const fvI=c.fv?ei('FAIXA_DE_VIDAS',c.fv):-1;
   const rIs=c.remb.length?c.remb.map(v=>ei('REEMBOLSO',v)).filter(i=>i>=0):[];
   const s=new Set();
@@ -1054,13 +1008,13 @@ function switchTab(mod){
   if(mod==='m1')renderM1();else if(mod==='m2')renderM2();else if(mod==='m3')renderM3();
 }
 
+// DOMContentLoaded handled by loadData
 window.switchTab=switchTab;window.addEquivRow=addEquivRow;
-  window.applyDist=applyDist;window.resetDist=resetDist;
-  window.updateDistSum=updateDistSum;
-  init(); // call directly
+window.applyDist=applyDist;window.resetDist=resetDist;
+window.updateDistSum=updateDistSum;
 
 }
 
-window.addEventListener('DOMContentLoaded', loadData);
+window.addEventListener('DOMContentLoaded',loadData);
 </script>
 </html>
